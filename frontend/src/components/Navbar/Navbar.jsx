@@ -3,7 +3,7 @@ import './Navbar.css'
 import { assets } from '../../assets/assets'
 import { useState } from 'react'
 
-const Narbar = () => {
+const Navbar = () => {
 
     const [menu, setMenu] = useState("home");
 
@@ -28,4 +28,4 @@ const Narbar = () => {
   )
 }
 
-export default Narbar
+export default Navbar
