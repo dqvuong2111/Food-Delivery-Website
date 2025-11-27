@@ -1,7 +1,7 @@
 .navbar{
     padding: 20px 0px;
     display: flex;
-    justify-content: space-between;
+    justify-content:space-between;
     align-items: center;
 }
 
@@ -23,6 +23,10 @@
     gap: 40px;
 }
 
+.navbar-right img{
+    cursor: pointer;
+}
+
 .navbar button{
     background: transparent;
     font-size: 16px;
@@ -35,11 +39,11 @@
 }
 
 .navbar button:hover{
-    background-color: #fff4f2;
+    background-color: tomato;
 }
 
 .navbar .active{
-    padding: 2px;
+    padding-bottom: 2px;
     border-bottom: 2px solid #49557e;
 }
 
@@ -59,4 +63,60 @@
     border-radius: 5px;
     top: -8px;
     right: -8px;
+}
+
+
+
+@media (max-width: 1050px) {
+    .navbar .logo{
+        width: 140px;
+    }
+
+    .navbar-menu{
+        gap: 18px;
+        font-size: 16px;
+    }
+
+    .navbar-right{
+        gap: 30px;
+    }
+
+    .navbar-right img{
+        width: 22px;
+    }
+
+    .navbar button{
+        font-size: 14px;
+        padding: 8px 25px;
+    }
+}
+
+@media (max-width: 900px) {
+    .navbar .logo{
+        width: 120px;
+    }
+
+    .navbar-menu{
+        gap: 15px;
+        font-size: 16px;
+    }
+
+    .navbar-right{
+        gap: 20px;
+    }
+
+    .navbar-right img{
+        width: 20px;
+    }
+
+    .navbar button{
+        font-size: 12px;
+        padding: 7px 20px;
+    }
+}
+
+@media (max-width: 750px) {
+    .navbar-menu{
+        display:none;
+    }
 }
