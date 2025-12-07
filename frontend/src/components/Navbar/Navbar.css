@@ -1,160 +1,205 @@
-.navbar{
-    padding: 20px 0px;
-    display: flex;
-    justify-content:space-between;
-    align-items: center;
+.navbar {
+  padding: 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--bg-app); /* Matches body initially */
+  transition: var(--transition-smooth);
 }
 
-.navbar .logo{
-    width: 150px;
+/* Optional: If you want sticky glass header, JS would toggle a class, 
+   but for now we keep it clean. */
+
+.navbar .logo {
+  width: 140px;
+  transition: var(--transition-smooth);
 }
 
-.navbar-menu{
-    display: flex;
-    list-style: none;
-    gap: 20px;
-    color: #49557e;
-    font-size: 18px;
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+  color: var(--text-secondary);
+  font-size: 17px;
+  font-weight: 500;
 }
 
-.navbar-right{
-    display: flex;
-    align-items: center;
-    gap: 40px;
+.navbar-menu li {
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
 }
 
-.navbar-right img{
+.navbar-menu li:hover {
+  color: var(--text-primary);
+}
+
+.navbar-menu .active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.navbar-menu .active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navbar-search-icon {
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.navbar-search-icon:hover {
+  transform: scale(1.1);
+}
+
+.navbar-search-icon .dot {
+  position: absolute;
+  min-width: 10px;
+  min-height: 10px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  top: -4px;
+  right: -4px;
+  border: 2px solid var(--bg-app);
+}
+
+.navbar button {
+  background: transparent;
+  font-size: 16px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-hover);
+  padding: 10px 28px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-weight: 500;
+}
+
+.navbar button:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-subtle);
+  transform: translateY(-2px);
+}
+
+/* Dropdown Profile */
+.navbar-profile {
+  position: relative;
+  cursor: pointer;
+}
+
+.nav-profile-dropdown {
+  position: absolute;
+  /* Use flex but hide visually to allow transitions */
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  right: 0;
+  top: 100%; 
+  margin-top: 10px;
+  z-index: 1;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--bg-surface);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-medium);
+  min-width: 180px;
+  transform: translateY(10px);
+  /* Transition: property duration timing-function delay */
+  /* We want a delay when HIDING (going to opacity 0) */
+  transition: opacity 0.3s ease 0.5s, transform 0.3s ease 0.5s, visibility 0.3s 0.5s;
+}
+
+/* Bridge the gap so hover isn't lost */
+.navbar-profile::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 20px; /* Covers the margin-top area */
+  background: transparent;
+}
+
+.navbar-profile:hover .nav-profile-dropdown {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  /* No delay when SHOWING */
+  transition: opacity 0.3s ease 0s, transform 0.3s ease 0s, visibility 0s 0s;
+}
+
+.nav-profile-dropdown li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: var(--transition-smooth);
+}
+
+.nav-profile-dropdown li:hover {
+  background-color: var(--bg-secondary);
+  color: var(--color-primary);
+}
+
+.nav-profile-dropdown img {
+  width: 20px;
+  height: 20px; /* Ensure SVG scaling */
+  opacity: 0.6;
+}
+
+.nav-profile-dropdown li:hover img {
+  opacity: 1;
+  /* SVG color change handled by stroke usually, or filter for PNGs. 
+     Since we switched to SVG, we can target stroke if inlined, but here it's img tag.
+     Filter is still effective for black icons -> colored. */
+  filter: sepia(1) hue-rotate(-50deg) saturate(500%); 
+}
+
+/* Ensure navbar right icons are sized well */
+.navbar-right img {
+    width: 24px;
+    height: 24px;
     cursor: pointer;
+    transition: var(--transition-smooth);
 }
 
-.navbar button{
-    background: transparent;
-    font-size: 16px;
-    color: #49557e;
-    border: 1px solid tomato;
-    padding: 10px 30px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: 0.3s;
+.navbar-right img:hover {
+    transform: scale(1.1);
 }
 
-.navbar button:hover{
-    background-color: tomato;
-}
-
-.navbar .active{
-    padding-bottom: 2px;
-    border-bottom: 2px solid #49557e;
-}
-
-.navbar li{
-    cursor: pointer;
-}
-
-.navbar-search-icon{
-    position: relative;
-}
-
-.navbar-search-icon .dot{
-    position: absolute;
-    min-width: 10px;
-    min-height: 10px;
-    background-color: tomato;
-    border-radius: 5px;
-    top: -8px;
-    right: -8px;
-}
-
-
-
+/* Responsive */
 @media (max-width: 1050px) {
-    .navbar .logo{
-        width: 140px;
-    }
-
-    .navbar-menu{
-        gap: 18px;
-        font-size: 16px;
-    }
-
-    .navbar-right{
-        gap: 30px;
-    }
-
-    .navbar-right img{
-        width: 22px;
-    }
-
-    .navbar button{
-        font-size: 14px;
-        padding: 8px 25px;
-    }
+  .navbar .logo { width: 120px; }
+  .navbar-menu { gap: 24px; font-size: 16px; }
+  .navbar-right { gap: 24px; }
+  .navbar button { padding: 8px 24px; }
 }
 
 @media (max-width: 900px) {
-    .navbar .logo{
-        width: 120px;
-    }
-
-    .navbar-menu{
-        gap: 15px;
-        font-size: 16px;
-    }
-
-    .navbar-right{
-        gap: 20px;
-    }
-
-    .navbar-right img{
-        width: 20px;
-    }
-
-    .navbar button{
-        font-size: 12px;
-        padding: 7px 20px;
-    }
-}
-
-.navbar-profile{
-    position: relative;
-}
-
-.nav-profile-dropdown{
-    position: absolute;
-    display: none;
-    right: 0;
-    z-index: 1;
-}
-
-.navbar-profile:hover .nav-profile-dropdown{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background-color: #fff2ef;
-    padding: 12px 25px;
-    border-radius: 4px;
-    border: 1px solid tomato;
-    outline: 2px solid white;
-    list-style: none;
-}
-
-.nav-profile-dropdown li{
-    display: flex;
-    align-self: center;
-    gap: 10px;
-    cursor: pointer;
-}
-
-.nav-profile-dropdown img{
-    width: 20px;
-}
-
-.nav-profile-dropdown li:hover{
-    color: tomato;
-}
-
-@media (max-width: 750px) {
-    .navbar-menu{
-        display:none;
-    }
+  .navbar-menu { display: none; } /* Burger menu logic would be needed here usually */
 }

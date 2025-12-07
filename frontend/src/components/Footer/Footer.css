@@ -1,61 +1,100 @@
 .footer {
-    color:aliceblue;
-    background-color: #323232;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: px;
-    padding: 20px 8vw;
-    padding-top: 80px;
-    margin-top: 100px;
+  color: #d9d9d9;
+  background-color: #1a1a1a; /* Darker, more premium gray */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 80px 8vw 40px;
+  margin-top: 100px;
 }
 
 .footer-content {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 80px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 80px;
 }
 
 .footer-content-left, .footer-content-right, .footer-content-center {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 24px;
 }
 
-.footer-content-left li, .footer-content-right li, .footer-content-center li {
-    list-style: none;
-    margin-bottom: 10px;
-    cursor: pointer;
+.footer-content-left p {
+  line-height: 1.6;
+  font-size: 15px;
 }
 
-.footer-content-right h2, .footer-content-center h2 {
-    color:tomato;
+.footer-content-center h2, .footer-content-right h2 {
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
-.footer-social-icon img{
-    width: 40px;
-    margin-right: 15px;
-    cursor: pointer;
+.footer-content ul {
+  padding: 0;
+}
+
+.footer-content li {
+  list-style: none;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.footer-content li:hover {
+  color: white;
+  transform: translateX(4px); /* Subtle slide */
+}
+
+.footer-social-icon {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-social-icon img {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid #444;
+  padding: 8px; /* Assuming icons are simple svgs/pngs, padding makes them look like buttons */
+  transition: all 0.3s ease;
+  background-color: #2a2a2a;
+}
+
+.footer-social-icon img:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  transform: translateY(-4px);
 }
 
 .footer hr {
-    width: 100%;
-    height: 2px;
-    margin: 20px 0;
-    background-color: grey;
-    border: none;
+  width: 100%;
+  height: 1px;
+  margin: 40px 0 20px;
+  background-color: #444;
+  border: none;
+}
+
+.footer-copyright {
+  text-align: center;
+  font-size: 14px;
+  color: #888;
 }
 
 @media (max-width: 750px) {
-    .footer-content{
-        display: flex;
-        flex-direction: column;
-        gap: 35px;
-    }
-
-    .footer-copyright{
-        text-align: center;
-    }
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .footer {
+    padding: 60px 5vw 30px;
+  }
 }

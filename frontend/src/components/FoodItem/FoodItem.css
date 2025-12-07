@@ -1,76 +1,144 @@
-.food-item{
-    width: 100%;
-    margin: auto;
-    border-radius: 15px;
-    box-shadow: 0px 0px 10px #00000015;
-    transition: 0.3s;
-    animation: fadeIn 1s ease-in-out;
+.food-item {
+  width: 100%;
+  margin: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+  animation: fadeIn 0.5s ease-in-out;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  overflow: hidden; /* Ensure image doesn't bleed out */
 }
 
-.food-item-image{
-    width: 100%;
-    border-radius: 15px 15px 0px 0px;
+.food-item:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
 }
 
-.food-item-info{
-    padding: 20px;
-
+.food-item-img-container {
+  position: relative;
+  overflow: hidden;
 }
 
-.food-item-name-rating{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+.food-item-image {
+  width: 100%;
+  height: 200px; /* Fixed height for consistency */
+  object-fit: cover;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transition: transform 0.5s ease;
 }
 
-.food-item-name-rating p{
-    font-size: 20px;
-    font-weight: 500;
+.food-item:hover .food-item-image {
+  transform: scale(1.05);
 }
 
-.food-item-name-rating img{
-    width: 70px;
+.food-item-info {
+  padding: 24px;
 }
 
-.food-item-desc{
-    color: #676767;
-    font-size: 12px;
+.food-item-name-rating {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.food-item-name-rating p {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.food-item-name-rating img {
+  width: 70px;
+}
+
+.food-item-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .food-item-price {
-    color: tomato;
-    font-size: 18px;
-    font-weight: 500;
-    margin: 10px 0px;
+  color: var(--color-primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 16px 0 0;
 }
 
-.food-item-img-container{
-    position: relative;
+/* Add Button */
+.food-item-img-container .add {
+  width: 44px; /* Slightly larger */
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: var(--shadow-subtle);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy transition */
+  background-color: white;
+  padding: 2px; /* Small white border effect */
 }
 
-.food-item-img-container .add{
-    width: 35px;
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    cursor: pointer;
-    border-radius: 50%;
+.food-item-img-container .add:hover {
+  transform: scale(1.15);
+  box-shadow: var(--shadow-medium);
 }
 
-.food-item-counter{
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px;
-    border-radius: 50px;
-    background-color: white;
+.food-item-img-container .add:active {
+  transform: scale(0.95);
 }
 
-.food-item-counter img{
-    width: 30px;
-    cursor: pointer;
+/* Counter Container */
+.food-item-counter {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px; /* More padding */
+  border-radius: var(--radius-full);
+  background-color: white;
+  box-shadow: var(--shadow-medium);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Pop in animation */
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.food-item-counter img {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border-radius: 50%; /* logical click area */
+  padding: 4px; /* Increases clickable area slightly */
+  background-color: var(--bg-secondary); /* Slight background for buttons */
+}
+
+.food-item-counter img:hover {
+  background-color: #ffe8e4; /* Light tomato tint */
+  transform: scale(1.1);
+  color: var(--color-primary);
+}
+
+.food-item-counter img:active {
+  transform: scale(0.9);
+}
+
+.food-item-counter p {
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 20px;
+  text-align: center;
 }

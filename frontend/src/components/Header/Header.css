@@ -1,60 +1,92 @@
-.header{
-   height: 34vw;
-   margin: 30px auto;
-   background: url('/header_img.png') no-repeat;
-   background-size: contain;
-   position: relative; 
+.header {
+  height: 34vw;
+  min-height: 450px; /* Ensure minimum height on desktop */
+  margin: 30px auto;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/header_img.png');
+  background-size: cover; /* Cover is better for heroes usually */
+  background-position: center;
+  border-radius: var(--radius-xl);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-strong);
+  display: flex;
+  align-items: center; /* Vertically center content */
 }
 
-.header-contents{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    gap: 1.5vw;
-    max-width: 50%;
-    bottom: 10%;
-    left: 6vw;
-    animation: fadeIn 3s;
+.header-contents {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 20px;
+  max-width: 55%;
+  left: 6vw;
+  bottom: auto; /* Reset absolute bottom positioning */
+  color: white;
+  animation: fadeIn 1s ease-out;
 }
 
-.header-contents h2{
-    font-weight: 500;
-    color: white;
-    font-size: max(4.5vw, 22px);
+.header-contents h2 {
+  font-weight: 600;
+  color: white;
+  font-size: max(4vw, 32px);
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-.header-contents p{
-    color: white;
-    font-size: 1vw;
+.header-contents p {
+  color: #f0f0f0;
+  font-size: max(1.1vw, 14px);
+  line-height: 1.6;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-.header-contents button{
-    border: none;
-    color: #747474;
-    font-weight: 500;
-    padding: 1vw 2.3vw;
-    background-color: white;
-    font-size: max(1vw, 13px);
-    border-radius: 50px;
+.header-contents button {
+  border: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 14px 36px;
+  background-color: white;
+  font-size: max(1vw, 14px);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  margin-top: 10px;
+}
+
+.header-contents button:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 1050px) {
-    .header-contents{
-        max-width: 45%;
-    }
+  .header {
+    height: 40vw;
+    min-height: auto;
+  }
+  .header-contents {
+    max-width: 60%;
+  }
 }
 
 @media (max-width: 750px) {
-    .header-contents{
-        max-width: 65%;
-    }
+  .header {
+    height: 50vw;
+    border-radius: var(--radius-lg);
+  }
+  
+  .header-contents {
+    max-width: 80%;
+    left: 4vw;
+  }
 
-    .header-contents p{
-        display: none;
-    }
+  .header-contents p {
+    display: none; /* Keep the original behavior of hiding text on mobile */
+  }
 
-    .header-contents button{
-        padding: 2vw 4vw;
-    }
+  .header-contents button {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
 }

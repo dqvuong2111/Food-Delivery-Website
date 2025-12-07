@@ -7,6 +7,7 @@ import Cart from './pages/Cart/Cart'
 import Footer from './components/Footer/Footer'
 import { useState } from 'react'
 import LoginPopup from './components/LoginPopup/LoginPopup'
+import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 
 const App = () => {
 
@@ -15,6 +16,7 @@ const App = () => {
 
   return (
     <>
+    <ScrollToTop />
     {showLogin?<LoginPopup setShowLogin={setShowLogin}/>:<></>}
       <div className='app'>
         <Navbar setShowLogin={setShowLogin}/>
