@@ -8,6 +8,10 @@ const StoreContextProvider = (props) => {
   const url = "http://localhost:4000";
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [discount, setDiscount] = useState(0); // Percentage
+  const [couponCode, setCouponCode] = useState("");
+  const [showLogin, setShowLogin] = useState(false);
 
   const addToCart = async (itemId) => {
     if (!cartItems[itemId]) {
@@ -46,6 +50,14 @@ const StoreContextProvider = (props) => {
     return totalAmount;
   };
 
+  const getFinalAmount = () => {
+    const total = getTotalCartAmount();
+    if (total === 0) return 0;
+    const deliveryCharge = 2;
+    const discountAmount = (total * discount) / 100;
+    return total + deliveryCharge - discountAmount;
+  };
+
   const fetchFoodList = async () => {
     const response = await axios.get(url + "/api/food/list");
     setFoodList(response.data.data);
@@ -81,6 +93,15 @@ const StoreContextProvider = (props) => {
     url,
     token,
     setToken,
+    searchTerm,
+    setSearchTerm,
+    discount,
+    setDiscount,
+    getFinalAmount,
+    couponCode,
+    setCouponCode,
+    showLogin,
+    setShowLogin,
   };
 
   return (

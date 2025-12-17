@@ -1,34 +1,60 @@
-.sidebar{
-    width: 18%;
-    min-height: 100vh;
-    border:1.5px solid #a9a9a9;
-    border-top: 0;
-    font-size: max(1vw,10px);
+.sidebar {
+  width: 15%; /* Reduced width */
+  min-height: 100vh;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
+  font-size: 15px; /* Slightly smaller font */
+  display: flex;
+  flex-direction: column;
 }
-.sidebar-options{
-    padding-top: 50px;
-    padding-left: 20%;
-    display:flex;
-    flex-direction: column;
-    gap: 20px;
+
+.sidebar-options {
+  padding-top: 40px; /* Reduced padding */
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Reduced gap */
+  width: 100%;
 }
-.sidebar-option{
-    display:flex;
-    align-items: center;
-    gap:12px;
-    border:1px solid #a9a9a9;
-    border-right:0;
-    padding:8px 10px;
-    border-radius:3px 0px 0px 3px;
-    cursor: pointer;
+
+.sidebar-option {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Reduced gap */
+  padding: 10px 18px; /* Reduced padding */
+  margin: 0 10px; /* Reduced side margins */
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  color: var(--text-secondary);
 }
-.sidebar-option.active{
-    background-color: #fff0ed;
-    border-color: tomato;
+
+.sidebar-option:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
+
+.sidebar-option.active {
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.sidebar-option img {
+  width: 22px; /* Slightly smaller icons */
+  height: 22px;
+  object-fit: contain;
+}
+
 @media (max-width: 900px) {
-    
-    .sidebar-option p{
-        display: none;
-    }
+  .sidebar-option p {
+    display: none;
+  }
+  
+  .sidebar-option {
+    justify-content: center;
+    padding: 10px; /* Adjusted padding */
+  }
 }

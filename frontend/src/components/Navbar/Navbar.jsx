@@ -1,18 +1,30 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import "./Navbar.css";
+import "./NavbarSearch.css";
 import { assets } from "../../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 
-const Navbar = ({setShowLogin}) => {
+const Navbar = () => {
   const [menu, setMenu] = useState("home");
-  const { getTotalCartAmount, token, setToken } = useContext(StoreContext);
+  const [showSearch, setShowSearch] = useState(false);
+  const { getTotalCartAmount, token, setToken, searchTerm, setSearchTerm, setShowLogin } = useContext(StoreContext);
   const navigate = useNavigate();
+  const searchInputRef = useRef(null);
+
   const logout = ()=>{
     localStorage.removeItem("token");
     setToken("");
     navigate("/");
   }
+
+  const toggleSearch = () => {
+    setShowSearch(!showSearch);
+    if (!showSearch) {
+      setTimeout(() => searchInputRef.current?.focus(), 100);
+    }
+  };
+
 
   // Auto update menu khi scroll
   useEffect(() => {
@@ -55,7 +67,10 @@ const Navbar = ({setShowLogin}) => {
       <ul className="navbar-menu">
         <Link
           to="/"
-          onClick={() => setMenu("home")}
+          onClick={() => {
+            setMenu("home");
+            window.scrollTo(0, 0);
+          }}
           className={menu === "home" ? "active" : ""}
         >
           home
@@ -87,7 +102,19 @@ const Navbar = ({setShowLogin}) => {
       </ul>
 
       <div className="navbar-right">
-        <img src={assets.search_icon} alt="" />
+        <div className={`navbar-search-container ${showSearch ? 'active' : ''}`}>
+           {showSearch && (
+            <input 
+              ref={searchInputRef}
+              type="text" 
+              placeholder="Search..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="navbar-search-input"
+            />
+           )}
+           <img src={assets.search_icon} alt="" onClick={toggleSearch} className="navbar-search-icon-btn"/>
+        </div>
 
         <div className="navbar-search-icon">
           <Link to="/cart">
@@ -95,7 +122,7 @@ const Navbar = ({setShowLogin}) => {
           </Link>
           <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
-        {!token?<button onClick={()=>setShowLogin(true)}>sign in</button>
+        {!token?<button onClick={()=>setShowLogin(true)}>Sign in</button>
         :<div className="navbar-profile">
           <img src={assets.profile_icon} alt=""/>
           <ul className="nav-profile-dropdown">

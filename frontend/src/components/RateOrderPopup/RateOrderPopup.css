@@ -1,0 +1,93 @@
+.rate-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.rate-popup-container {
+    width: max(30vw, 400px);
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.rate-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rate-popup-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.rate-popup-header img {
+    cursor: pointer;
+    width: 16px;
+}
+
+.rate-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.item-name {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.star-rating {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.star {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star.filled {
+    color: #ffc107;
+}
+
+.rate-item textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.rate-popup-container button {
+    background: tomato;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.rate-popup-container button:hover {
+    background: #e0431f;
+}

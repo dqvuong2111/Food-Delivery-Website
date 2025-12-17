@@ -5,9 +5,10 @@ import { assets } from '../../assets/assets'
 import { useEffect } from 'react'
 import { StoreContext } from '../../context/StoreContext'
 import axios from "axios"
-const LoginPopup = ({setShowLogin}) => {
 
-    const{url,setToken} = useContext(StoreContext)
+const LoginPopup = () => {
+
+    const{url,setToken, setShowLogin} = useContext(StoreContext)
 
     const [currState,setCurrState]= useState("Login")
     const [data,setData] = useState({
@@ -52,18 +53,21 @@ const LoginPopup = ({setShowLogin}) => {
             <img onClick={()=>setShowLogin(false)} src={assets.cross_icon} alt=""/>
         </div>
         <div className="login-popup-inputs">
-            {currState==="Login" ? <></> : <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='Your name' required/>}
-            <input name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Your email' required/>
-            <input name='password' onChange={onChangeHandler} value={data.password} type="password" placeholder='Your password' required/>
+            {currState==="Login" ? <></> : <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='Your Name' required/>}
+            <input name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Email Address' required/>
+            <input name='password' onChange={onChangeHandler} value={data.password} type="password" placeholder='Password' required/>
         </div>
-        <button type='submit'>{currState==="Sign Up"?"Create account":"Login"}</button>
+        
         <div className="login-popup-condition">
-            <input type="checkbox"required/>
-            <p>By continuing, i agree to the terms of use & privacy policy.</p>
+            <input type="checkbox" required/>
+            <p>I agree to the Terms of Service and Privacy Policy.</p>
         </div>
+
+        <button type='submit'>{currState==="Sign Up"?"Create Account":"Login"}</button>
+
         {currState==="Login"
-        ? <p>Create a new account? <span onClick={()=>setCurrState("Sign Up")}>Click here</span></p>
-        : <p>Already have an account? <span onClick={()=>setCurrState("Login")}>Login here</span></p>
+        ? <p className="login-switch">New here? <span onClick={()=>setCurrState("Sign Up")}>Create account</span></p>
+        : <p className="login-switch">Already have an account? <span onClick={()=>setCurrState("Login")}>Login here</span></p>
         }
 
       </form>

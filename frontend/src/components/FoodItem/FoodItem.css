@@ -7,7 +7,9 @@
   animation: fadeIn 0.5s ease-in-out;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
-  overflow: hidden; /* Ensure image doesn't bleed out */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .food-item:hover {
@@ -19,13 +21,13 @@
 .food-item-img-container {
   position: relative;
   overflow: hidden;
+  height: 200px;
 }
 
 .food-item-image {
   width: 100%;
-  height: 200px; /* Fixed height for consistency */
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   transition: transform 0.5s ease;
 }
 
@@ -34,111 +36,122 @@
 }
 
 .food-item-info {
-  padding: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
 }
 
 .food-item-name-rating {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
 }
 
 .food-item-name-rating p {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.food-item-name-rating img {
-  width: 70px;
+.rating-container {
+    position: relative;
+}
+
+.stars-hidden {
+    display: none;
+}
+
+.dynamic-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff8e1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #f57c00;
+}
+
+.dynamic-rating .star {
+    color: #ffc107;
+    font-size: 14px;
+}
+
+.review-count {
+    color: #999;
+    font-size: 12px;
+    font-weight: 400;
 }
 
 .food-item-desc {
   color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: auto; /* Pushes action area to bottom */
+}
+
+.food-item-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
 }
 
 .food-item-price {
   color: var(--color-primary);
   font-size: 20px;
-  font-weight: 600;
-  margin: 16px 0 0;
+  font-weight: 700;
 }
 
-/* Add Button */
-.food-item-img-container .add {
-  width: 44px; /* Slightly larger */
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  cursor: pointer;
-  border-radius: 50%;
-  box-shadow: var(--shadow-subtle);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy transition */
-  background-color: white;
-  padding: 2px; /* Small white border effect */
+.food-item-add-btn {
+    background-color: var(--bg-secondary);
+    color: var(--color-primary);
+    border: 1px solid var(--border-default);
+    padding: 10px 20px; /* Larger */
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.food-item-img-container .add:hover {
-  transform: scale(1.15);
-  box-shadow: var(--shadow-medium);
+.food-item-add-btn:hover {
+    background-color: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-subtle);
 }
 
-.food-item-img-container .add:active {
-  transform: scale(0.95);
+.food-item-counter-simple {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-secondary);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
 }
 
-/* Counter Container */
-.food-item-counter {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 12px; /* More padding */
-  border-radius: var(--radius-full);
-  background-color: white;
-  box-shadow: var(--shadow-medium);
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Pop in animation */
+.counter-btn-minus, .counter-btn-plus {
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    user-select: none;
+    transition: color 0.2s;
+    width: 20px;
+    text-align: center;
 }
 
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.counter-btn-minus:hover, .counter-btn-plus:hover {
+    color: var(--color-primary);
 }
 
-.food-item-counter img {
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  border-radius: 50%; /* logical click area */
-  padding: 4px; /* Increases clickable area slightly */
-  background-color: var(--bg-secondary); /* Slight background for buttons */
-}
-
-.food-item-counter img:hover {
-  background-color: #ffe8e4; /* Light tomato tint */
-  transform: scale(1.1);
-  color: var(--color-primary);
-}
-
-.food-item-counter img:active {
-  transform: scale(0.9);
-}
-
-.food-item-counter p {
-  font-weight: 600;
-  color: var(--text-primary);
-  min-width: 20px;
-  text-align: center;
+.food-item-counter-simple span:nth-child(2) {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 16px;
+    text-align: center;
 }

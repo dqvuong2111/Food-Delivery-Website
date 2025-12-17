@@ -48,7 +48,7 @@ const Add = ({url}) => {
 
 
   return (  
-    <div className='add'>
+    <div className='add' data-aos="fade-up" data-aos-duration="1000">
       <form className="flex-col" onSubmit={onSubmitHandler}>
         <div className="add-img-upload flex-col">   
             <p> Upload Image</p>

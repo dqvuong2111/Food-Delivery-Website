@@ -38,7 +38,7 @@ const List = ({url}) => {
   return (  
     <div className="list add flex-col">
         <p>All Foods List</p>
-        <div className="list-table">
+        <div className="list-table-header">
             <b>Image</b>
             <b>Name</b>
             <b>Category</b>
@@ -47,7 +47,7 @@ const List = ({url}) => {
         </div>
         {list.map((item,index)=>{
            return(
-            <div key={index} className="list-table-format">
+            <div key={index} className="list-table-row" data-aos="fade-up" data-aos-delay={index * 100} data-aos-anchor-placement="top-bottom">
                 <img src={`${url}/images/`+item.image} alt=""/>
                 <p>{item.name}</p>
                 <p>{item.category}</p>

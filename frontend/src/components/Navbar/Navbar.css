@@ -6,12 +6,9 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--bg-app); /* Matches body initially */
+  background-color: var(--bg-app);
   transition: var(--transition-smooth);
 }
-
-/* Optional: If you want sticky glass header, JS would toggle a class, 
-   but for now we keep it clean. */
 
 .navbar .logo {
   width: 140px;
@@ -60,14 +57,25 @@
   gap: 32px;
 }
 
-.navbar-search-icon {
-  position: relative;
-  cursor: pointer;
-  transition: var(--transition-smooth);
+/* Common Icon Styles */
+.navbar-right img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    opacity: 0.8;
 }
 
-.navbar-search-icon:hover {
-  transform: scale(1.1);
+.navbar-right img:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.navbar-search-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbar-search-icon .dot {
@@ -76,21 +84,22 @@
   min-height: 10px;
   background-color: var(--color-primary);
   border-radius: 50%;
-  top: -4px;
-  right: -4px;
+  top: -2px;
+  right: -2px;
   border: 2px solid var(--bg-app);
 }
 
+/* Sign In Button */
 .navbar button {
   background: transparent;
-  font-size: 16px;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-hover);
-  padding: 10px 28px;
+  font-size: 15px;
+  color: var(--text-primary);
+  border: 1px solid var(--text-tertiary); /* Softer border */
+  padding: 10px 32px;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: var(--transition-smooth);
-  font-weight: 500;
+  font-weight: 600; /* Bolder text */
 }
 
 .navbar button:hover {
@@ -105,18 +114,18 @@
 .navbar-profile {
   position: relative;
   cursor: pointer;
+  display: flex; /* Centers the icon */
 }
 
 .nav-profile-dropdown {
   position: absolute;
-  /* Use flex but hide visually to allow transitions */
   display: flex;
   visibility: hidden;
   opacity: 0;
   right: 0;
   top: 100%; 
-  margin-top: 10px;
-  z-index: 1;
+  margin-top: 15px; /* More spacing */
+  z-index: 10;
   flex-direction: column;
   gap: 8px;
   background-color: var(--bg-surface);
@@ -126,19 +135,16 @@
   box-shadow: var(--shadow-medium);
   min-width: 180px;
   transform: translateY(10px);
-  /* Transition: property duration timing-function delay */
-  /* We want a delay when HIDING (going to opacity 0) */
-  transition: opacity 0.3s ease 0.5s, transform 0.3s ease 0.5s, visibility 0.3s 0.5s;
+  transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s, visibility 0.3s 0.2s;
 }
 
-/* Bridge the gap so hover isn't lost */
 .navbar-profile::after {
   content: '';
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
-  height: 20px; /* Covers the margin-top area */
+  height: 25px; 
   background: transparent;
 }
 
@@ -146,7 +152,6 @@
   visibility: visible;
   opacity: 1;
   transform: translateY(0);
-  /* No delay when SHOWING */
   transition: opacity 0.3s ease 0s, transform 0.3s ease 0s, visibility 0s 0s;
 }
 
@@ -155,10 +160,12 @@
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   transition: var(--transition-smooth);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .nav-profile-dropdown li:hover {
@@ -167,29 +174,14 @@
 }
 
 .nav-profile-dropdown img {
-  width: 20px;
-  height: 20px; /* Ensure SVG scaling */
+  width: 18px;
+  height: 18px;
   opacity: 0.6;
 }
 
 .nav-profile-dropdown li:hover img {
   opacity: 1;
-  /* SVG color change handled by stroke usually, or filter for PNGs. 
-     Since we switched to SVG, we can target stroke if inlined, but here it's img tag.
-     Filter is still effective for black icons -> colored. */
   filter: sepia(1) hue-rotate(-50deg) saturate(500%); 
-}
-
-/* Ensure navbar right icons are sized well */
-.navbar-right img {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    transition: var(--transition-smooth);
-}
-
-.navbar-right img:hover {
-    transform: scale(1.1);
 }
 
 /* Responsive */
@@ -201,5 +193,5 @@
 }
 
 @media (max-width: 900px) {
-  .navbar-menu { display: none; } /* Burger menu logic would be needed here usually */
+  .navbar-menu { display: none; } 
 }

@@ -42,7 +42,7 @@ const Orders = ({ url }) => {
       <h3>Order Page</h3>
       <div className="order-list">
         {orders.map((order, index) => (
-          <div key={index} className="order-item">
+          <div key={index} className="order-item" data-aos="fade-left" data-aos-delay={index * 100} data-aos-anchor-placement="center-bottom">
             <img src={assets.parcel_icon} alt="" />
             <div>
               <p className="order-item-food">

@@ -92,11 +92,13 @@
   color: white;
   background-color: var(--color-primary);
   width: 100%;
-  padding: 14px 0px;
+  padding: 16px 0px; /* Larger */
   border-radius: var(--radius-md);
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 16px;
   transition: var(--transition-smooth);
+  letter-spacing: 0.5px;
 }
 
 .cart-total button:hover {
@@ -122,7 +124,7 @@
   align-items: center;
   background-color: var(--bg-secondary);
   border-radius: var(--radius-md);
-  padding: 4px; /* Slight padding for the button */
+  padding: 6px; /* Increased padding */
 }
 
 .cart-promocode-input input {
@@ -137,12 +139,13 @@
 
 .cart-promocode-input button {
   width: max(10vw, 150px);
-  padding: 12px 20px;
-  background-color: black; /* Keep black for contrast */
+  padding: 14px 20px; /* Larger */
+  background-color: black; 
   border: none;
   color: white;
   border-radius: var(--radius-md);
   cursor: pointer;
+  font-weight: 600;
   transition: var(--transition-smooth);
 }
 

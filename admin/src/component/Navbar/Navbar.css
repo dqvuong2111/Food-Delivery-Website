@@ -1,15 +1,38 @@
-.navbar{
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 4%;
-}
-.navbar .logo{
-    width: max(10%,80px);
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 4%;
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.navbar .profie{
-    width: 40px;
-    
+.navbar .logo {
+  width: max(10%, 120px);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.navbar .logo:hover {
+  transform: scale(1.05);
+}
+
+.navbar .profie {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border: 2px solid var(--border-default);
+}
+
+.navbar .profie:hover {
+  border-color: var(--color-primary);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-subtle);
 }
 

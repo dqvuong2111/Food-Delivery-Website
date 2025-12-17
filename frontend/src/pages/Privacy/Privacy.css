@@ -1,0 +1,38 @@
+.privacy-page {
+    margin: 50px auto;
+    padding: 0 4vw;
+    max-width: 1000px;
+}
+
+.privacy-header {
+    margin-bottom: 40px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.privacy-header h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.privacy-header p {
+    color: #888;
+}
+
+.privacy-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.privacy-content section h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.privacy-content section p {
+    line-height: 1.7;
+    color: #555;
+    text-align: justify;
+}

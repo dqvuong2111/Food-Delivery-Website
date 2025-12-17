@@ -96,17 +96,18 @@ ul {
 .btn-primary {
   background-color: var(--color-primary);
   color: white;
-  padding: 12px 32px;
+  padding: 14px 36px; /* Larger padding */
   border-radius: var(--radius-full);
   border: none;
-  font-weight: 500;
+  font-size: 16px; /* Larger text */
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition-smooth);
   box-shadow: 0 4px 10px rgba(255, 76, 36, 0.2);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px); /* More movement */
   box-shadow: 0 6px 15px rgba(255, 76, 36, 0.3);
   background-color: #e0431f;
 }
