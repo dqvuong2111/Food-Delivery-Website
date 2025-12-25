@@ -1,33 +1,39 @@
 import foodModel from "../models/foodModel.js";
 import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 import reviewModel from "../models/reviewModel.js";
 
-// add food item
 const addFood = async (req, res) => {
-    let image_filename = `${req.file.filename}`;
-
-    const food = new foodModel({
-        name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
-        category: req.body.category,
-        image: image_filename
-    })
     try {
+        let image_url = `${req.file.filename}`;
+
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                resource_type: 'image'
+            });
+            image_url = result.secure_url;
+            fs.unlink(req.file.path, () => {});
+        }
+
+        const food = new foodModel({
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            category: req.body.category,
+            image: image_url
+        })
+
         await food.save();
         res.json({ success: true, message: "Food Added" })
     } catch (error) {
-        console.log(error)
         res.json({ success: false, message: "Error" })
     }
 }
 
-// all food list
 const listFood = async (req, res) => {
     try {
         const foods = await foodModel.find({});
         
-        // Enrich with ratings
         const foodsWithRatings = await Promise.all(foods.map(async (food) => {
             const reviews = await reviewModel.find({ foodId: food._id });
             let avgRating = 0;
@@ -40,25 +46,25 @@ const listFood = async (req, res) => {
 
         res.json({ success: true, data: foodsWithRatings })
     } catch (error) {
-        console.log(error);
         res.json({ success: false, message: "Error" })
     }
 }
 
-// remove food item
 const removeFood = async (req, res) => {
   try {
     const food = await foodModel.findById(req.body.id);
-    fs.unlink(`uploads/${food.image}`, () => {});
+    
+    if (food.image && !food.image.startsWith('http')) {
+        fs.unlink(`uploads/${food.image}`, () => {});
+    } 
 
     await foodModel.findByIdAndDelete(req.body.id);
     res.json({ success: true, message: "Food Removed" });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: "Error" });
   }
 };
-// toggle food availability
+
 const toggleAvailability = async (req, res) => {
     try {
         const food = await foodModel.findById(req.body.id);
@@ -66,7 +72,6 @@ const toggleAvailability = async (req, res) => {
         await food.save();
         res.json({ success: true, message: "Availability Updated" });
     } catch (error) {
-        console.log(error);
         res.json({ success: false, message: "Error" });
     }
 }

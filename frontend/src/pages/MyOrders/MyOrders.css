@@ -174,6 +174,39 @@
     transform: translateY(-2px);
 }
 
+.reorder-btn {
+    padding: 10px 24px;
+    border: 1px solid #10b981;
+    background-color: transparent;
+    color: #10b981;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.reorder-btn:hover {
+    background-color: #ecfdf5;
+    transform: translateY(-2px);
+}
+
+.cancelled-order {
+    border-color: #fca5a5;
+    background-color: #fff9f9;
+}
+
+.order-cancelled-banner {
+    padding: 20px;
+    background-color: #fef2f2;
+    border: 1px dashed #f87171;
+    border-radius: 8px;
+    color: #dc2626;
+    font-weight: 500;
+    text-align: center;
+    margin: 20px 0;
+}
+
 @media (max-width: 600px) {
     .order-tracker {
         font-size: 10px;

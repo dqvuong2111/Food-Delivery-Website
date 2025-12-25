@@ -3,6 +3,7 @@ import './Add.css';
 import { assets } from "../../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { UploadCloud } from "lucide-react";
 
 
 const Add = ({url}) => {
@@ -46,7 +47,8 @@ const Add = ({url}) => {
         formData.append('price', Number(data.price));
         formData.append('category', data.category);
         formData.append('image', image);
-        const response = await axios.post(`${url}/api/food/add`, formData);
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`${url}/api/food/add`, formData, {headers: {token}});
         if (response.data.success) {
             setData({
                 name: "",
@@ -74,11 +76,7 @@ const Add = ({url}) => {
                 ) : (
                     <div className="upload-instructions">
                         <div className="upload-circle">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
+                            <UploadCloud size={32} />
                         </div>
                         <span className="upload-text-main">Click or drag image here</span>
                         <span className="upload-text-sub">Supports: JPG, PNG, WEBP</span>

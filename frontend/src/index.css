@@ -64,10 +64,10 @@ ul {
 }
 
 .app {
-  width: 90%; /* Increased width for modern feel */
-  max-width: 1440px;
+  width: 95%; /* Reverted to 95% */
+  max-width: 1600px;
   margin: auto;
-  padding: 20px 0;
+  padding: 0; /* Removed padding so navbar sits at top */
 }
 
 /* Utility Classes derived from giaovienai */

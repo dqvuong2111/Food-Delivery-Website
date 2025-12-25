@@ -27,7 +27,8 @@ const Coupons = ({url}) => {
 
     const onAddCoupon = async (e) => {
         e.preventDefault();
-        const response = await axios.post(`${url}/api/coupon/add`, newCoupon);
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`${url}/api/coupon/add`, newCoupon, {headers: {token}});
         if(response.data.success) {
             setNewCoupon({code: "", discountPercentage: ""});
             fetchCoupons();
@@ -38,7 +39,8 @@ const Coupons = ({url}) => {
     }
 
     const removeCoupon = async (id) => {
-        const response = await axios.post(`${url}/api/coupon/remove`, {id});
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`${url}/api/coupon/remove`, {id}, {headers: {token}});
         if(response.data.success) {
             fetchCoupons();
             toast.success(response.data.message);

@@ -62,7 +62,7 @@ const Cart = () => {
                                 return (
                                     <tr key={index}>
                                         <td className="cart-product-cell">
-                                            <img src={url+"/images/"+item.image} alt="" className="cart-product-img"/>
+                                            <img src={item.image.startsWith("http") ? item.image : url+"/images/"+item.image} alt="" className="cart-product-img"/>
                                             <div className="cart-product-details">
                                                 <p className="cart-product-name">{item.name}</p>
                                                 <p className="cart-product-cat">{item.category}</p>

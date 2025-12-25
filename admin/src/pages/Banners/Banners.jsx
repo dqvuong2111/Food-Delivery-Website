@@ -22,7 +22,8 @@ const Banners = ({url}) => {
         const formData = new FormData();
         formData.append("image", image);
         
-        const response = await axios.post(`${url}/api/banner/add`, formData);
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`${url}/api/banner/add`, formData, {headers: {token}});
         if(response.data.success) {
             setImage(false);
             fetchBanners();
@@ -33,7 +34,8 @@ const Banners = ({url}) => {
     }
 
     const removeBanner = async (id) => {
-        const response = await axios.post(`${url}/api/banner/remove`, {id});
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`${url}/api/banner/remove`, {id}, {headers: {token}});
         if(response.data.success) {
             fetchBanners();
             toast.success(response.data.message);

@@ -32,7 +32,8 @@ const Category = ({url}) => {
         formData.append("name", data.name);
         formData.append("image", image);
 
-        const response = await axios.post(`${url}/api/category/add`, formData);
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`${url}/api/category/add`, formData, {headers: {token}});
         if(response.data.success) {
             setData({name: ""});
             setImage(false);
@@ -44,7 +45,8 @@ const Category = ({url}) => {
     }
 
     const removeCategory = async (id) => {
-        const response = await axios.post(`${url}/api/category/remove`, {id});
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`${url}/api/category/remove`, {id}, {headers: {token}});
         if(response.data.success) {
             fetchCategories();
             toast.success(response.data.message);

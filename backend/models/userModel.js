@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
         zipcode: "",
         country: ""
     }},
-        wishlist: {type:Object, default:{}},
+    role: {type: String, default: "user"},
+    wishlist: {type:Object, default:{}},
         resetPasswordToken: {type:String},
         resetPasswordExpires: {type:Date}
     },{minimize:false})

@@ -6,13 +6,16 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { assets } from '../../assets/assets';
 import RateOrderPopup from '../../components/RateOrderPopup/RateOrderPopup';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const MyOrders = () => {
 
-    const {url, token} = useContext(StoreContext);
+    const {url, token, addToCart} = useContext(StoreContext);
     const [data, setData] = useState([]);
     const [showRatePopup, setShowRatePopup] = useState(false);
     const [selectedOrderItems, setSelectedOrderItems] = useState([]);
+    const navigate = useNavigate();
 
     const fetchOrders = async () => {
         const response = await axios.post(url+"/api/order/userorders", {}, {headers:{token}});
@@ -24,6 +27,23 @@ const MyOrders = () => {
         setShowRatePopup(true);
     }
 
+    const handleReorder = async (order) => {
+        if (order.status === "Cancelled") {
+            // Direct to menu to choose new dishes
+            navigate('/');
+            window.scrollTo(0, 0);
+        } else {
+            // Delivered: Add old items to cart
+            for (const item of order.items) {
+                 for(let i=0; i<item.quantity; i++) {
+                     await addToCart(item._id); 
+                 }
+            }
+            toast.success("Items added to cart!");
+            navigate('/cart'); // Optional: redirect to cart for convenience
+        }
+    }
+
     useEffect(() => {
         if(token) {
             fetchOrders();
@@ -31,6 +51,7 @@ const MyOrders = () => {
     }, [token])
 
     const getStatusStep = (status) => {
+        if (status === "Cancelled") return -1;
         const steps = ["Pending", "Confirmed", "Food Processing", "Out for delivery", "Delivered"];
         const index = steps.indexOf(status);
         return index === -1 ? 0 : index + 1;
@@ -44,7 +65,7 @@ const MyOrders = () => {
                 {data.map((order, index) => {
                     const currentStep = getStatusStep(order.status);
                     return (
-                        <div key={index} className="my-orders-order">
+                        <div key={index} className={`my-orders-order ${order.status === 'Cancelled' ? 'cancelled-order' : ''}`}>
                             <div className="order-header-info">
                                 <img src={assets.parcel_icon} alt="" />
                                 <p>{order.items.map((item, idx) => {
@@ -62,37 +83,49 @@ const MyOrders = () => {
                                 <p>Items: {order.items.length}</p>
                             </div>
 
-                            <div className="order-tracker">
-                                <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-                                    <div className="step-circle">1</div>
-                                    <span>Pending</span>
+                            {order.status === 'Cancelled' ? (
+                                <div className="order-cancelled-banner">
+                                    <p style={{fontWeight: 'bold', marginBottom: '5px'}}>❌ Order Cancelled</p>
+                                    <p style={{fontSize: '13px'}}>Reason: {order.cancellationReason || "No reason provided"}</p>
                                 </div>
-                                <div className={`line ${currentStep >= 2 ? 'active' : ''}`}></div>
-                                <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-                                    <div className="step-circle">2</div>
-                                    <span>Confirmed</span>
+                            ) : (
+                                <div className="order-tracker">
+                                    <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
+                                        <div className="step-circle">1</div>
+                                        <span>Pending</span>
+                                    </div>
+                                    <div className={`line ${currentStep >= 2 ? 'active' : ''}`}></div>
+                                    <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
+                                        <div className="step-circle">2</div>
+                                        <span>Confirmed</span>
+                                    </div>
+                                    <div className={`line ${currentStep >= 3 ? 'active' : ''}`}></div>
+                                    <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
+                                        <div className="step-circle">3</div>
+                                        <span>Processing</span>
+                                    </div>
+                                    <div className={`line ${currentStep >= 4 ? 'active' : ''}`}></div>
+                                    <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
+                                        <div className="step-circle">4</div>
+                                        <span>On Way</span>
+                                    </div>
+                                    <div className={`line ${currentStep >= 5 ? 'active' : ''}`}></div>
+                                    <div className={`step ${currentStep >= 5 ? 'active' : ''}`}>
+                                        <div className="step-circle">5</div>
+                                        <span>Delivered</span>
+                                    </div>
                                 </div>
-                                <div className={`line ${currentStep >= 3 ? 'active' : ''}`}></div>
-                                <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-                                    <div className="step-circle">3</div>
-                                    <span>Processing</span>
-                                </div>
-                                <div className={`line ${currentStep >= 4 ? 'active' : ''}`}></div>
-                                <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
-                                    <div className="step-circle">4</div>
-                                    <span>On Way</span>
-                                </div>
-                                <div className={`line ${currentStep >= 5 ? 'active' : ''}`}></div>
-                                <div className={`step ${currentStep >= 5 ? 'active' : ''}`}>
-                                    <div className="step-circle">5</div>
-                                    <span>Delivered</span>
-                                </div>
-                            </div>
+                            )}
                             
                             <div className="order-actions">
                                 <button onClick={fetchOrders} className="track-btn">Refresh Status</button>
                                 {order.status === 'Delivered' && (
                                     <button onClick={() => handleRate(order.items)} className="rate-btn">Rate Order</button>
+                                )}
+                                {(order.status === 'Cancelled' || order.status === 'Delivered') && (
+                                    <button onClick={() => handleReorder(order)} className="reorder-btn">
+                                        {order.status === 'Cancelled' ? "Choose New Dishes" : "Reorder"}
+                                    </button>
                                 )}
                             </div>
                         </div>

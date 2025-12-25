@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { assets } from "../../assets/assets";
+import { Package } from "lucide-react";
 
 const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
 
   const fetchAllOrder = async () => {
-    const response = await axios.get(url + "/api/order/list");
+    const token = localStorage.getItem("token");
+    const response = await axios.get(url + "/api/order/list", {headers: {token}});
     if (response.data.success) {
       setOrders(response.data.data.reverse()); // Show newest first
     } else {
@@ -18,10 +20,20 @@ const Orders = ({ url }) => {
   };
 
   const statusHandler = async (event, orderId) => {
+    const newStatus = event.target.value;
+    let reason = "";
+    
+    if (newStatus === "Cancelled") {
+        reason = prompt("Please enter a reason for cancellation:", "Out of stock");
+        if (reason === null) return; // Cancelled the prompt
+    }
+
+    const token = localStorage.getItem("token");
     const response = await axios.post(url + "/api/order/status", {
       orderId,
-      status: event.target.value
-    });
+      status: newStatus,
+      cancellationReason: reason
+    }, {headers: {token}});
     if (response.data.success) {
       await fetchAllOrder();
       toast.success("Order status updated");
@@ -39,7 +51,9 @@ const Orders = ({ url }) => {
         {orders.map((order, index) => (
           <div key={index} className="order-card">
             <div className="order-card-header">
-              <img src={assets.parcel_icon} alt="" className="parcel-icon" />
+              <div className="parcel-icon">
+                  <Package size={24} color="#6b7280" />
+              </div>
               <div className="order-id">
                 <span className="label">Order ID</span>
                 <span className="value">#{order._id.slice(-6).toUpperCase()}</span>
@@ -95,6 +109,7 @@ const Orders = ({ url }) => {
                   <option value="Food Processing">Processing</option>
                   <option value="Out for delivery">Out for Delivery</option>
                   <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
             </div>

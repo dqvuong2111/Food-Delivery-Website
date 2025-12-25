@@ -3,6 +3,12 @@ import couponModel from "../models/couponModel.js";
 // Add Coupon
 const addCoupon = async (req, res) => {
     try {
+        if (req.body.discountPercentage > 100) {
+            return res.json({ success: false, message: "Discount cannot exceed 100%" });
+        }
+        if (req.body.discountPercentage < 0) {
+            return res.json({ success: false, message: "Discount cannot be negative" });
+        }
         const coupon = new couponModel({
             code: req.body.code.toUpperCase(),
             discountPercentage: req.body.discountPercentage

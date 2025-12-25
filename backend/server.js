@@ -12,6 +12,7 @@ import dashboardRouter from "./routes/dashboardRoute.js"
 import bannerRouter from "./routes/bannerRoute.js"
 import categoryRouter from "./routes/categoryRoute.js"
 import settingsRouter from "./routes/settingsRoute.js"
+import connectCloudinary from "./config/cloudinary.js";
 
 // app config
 const app = express()
@@ -23,6 +24,7 @@ app.use(cors())
 
 // db connection
 connectDB();
+connectCloudinary();
 
 // api endpoints
 app.use("/api/food",foodRouter)
@@ -44,4 +46,3 @@ app.get("/",(req,res)=>{
 app.listen(port, () => {
   console.log(`Server Started on http://localhost:${port}`);
 });
-//mongodb+srv://greatstack:hoitinhnghich@123@cluster0.32be1o3.mongodb.net/?

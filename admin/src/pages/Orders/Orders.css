@@ -1,7 +1,6 @@
 .order {
     width: 100%;
-    margin: 0;
-    padding: 40px;
+    padding: 20px 40px;
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -53,11 +52,12 @@
 .parcel-icon {
     width: 40px;
     height: 40px;
-    padding: 8px;
     background-color: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 50%;
-    object-fit: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .order-id {
@@ -214,6 +214,7 @@
 .status-select.food-processing { background-color: #f0fdf4; color: #15803d; border-color: #dcfce7; }
 .status-select.out-for-delivery { background-color: #faf5ff; color: #7e22ce; border-color: #f3e8ff; }
 .status-select.delivered { background-color: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.status-select.cancelled { background-color: #fef2f2; color: #ef4444; border-color: #fecaca; }
 
 @media (max-width: 480px) {
     .order {

@@ -9,8 +9,15 @@
     "install-all": "npm run install-backend && npm run install-frontend && npm run install-admin",
     "start-backend": "cd backend && npm run server",
     "start-frontend": "cd frontend && npm run dev",
-    "start-admin": "cd admin && npm run dev"
+    "start-admin": "cd admin && npm run dev",
+    "all": "concurrently \"npm run start-backend\" \"npm run start-frontend\" \"npm run start-admin\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

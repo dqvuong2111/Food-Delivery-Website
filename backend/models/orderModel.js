@@ -9,6 +9,7 @@ const orderSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now() },
   payment: { type: Boolean, default: false },
   isRead: { type: Boolean, default: false },
+  cancellationReason: { type: String, default: "" },
 });
 const orderModel =
   mongoose.models.order || mongoose.model("order", orderSchema);

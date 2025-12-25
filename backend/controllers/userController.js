@@ -21,7 +21,7 @@ const loginUser = async (req, res) => {
         }
 
         const token = createToken(user._id);
-        res.json({success:true, token});
+        res.json({success:true, token, role: user.role});
 
     } catch (error) {
         console.log(error);
@@ -71,6 +71,77 @@ const registerUser = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.json({success:false, message:"Registering user failed"})
+    }
+}
+
+// register admin (only accessible by existing admins)
+const registerAdmin = async (req, res) => {
+    const {name, password, email} = req.body;
+    try {
+        // checking is user already exists
+        const exists = await userModel.findOne({email});
+        if(exists){
+            return res.json({success:false, message:"User already exists"});
+        }
+
+        // validating email format & strong password
+        if(!validator.isEmail(email)){
+            return res.json({success:false, message:"Please enter a valid email"});
+        }
+
+        if(password.length < 8){
+            return res.json({success:false, message:"Please enter a strong password"});
+        }
+
+        // hashing user password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const newAdmin = new userModel({
+            name: name,
+            email: email,
+            password: hashedPassword,
+            role: "admin" // Explicitly set role to admin
+        })
+
+        await newAdmin.save();
+        res.json({success:true, message: "Admin account created successfully"})
+
+    } catch (error) {
+        console.log(error);
+        res.json({success:false, message:"Error creating admin"})
+    }
+}
+
+// list all admins
+const listAdmins = async (req, res) => {
+    try {
+        const admins = await userModel.find({role: "admin"}).select("-password");
+        res.json({success: true, data: admins});
+    } catch (error) {
+        console.log(error);
+        res.json({success: false, message: "Error fetching admins"});
+    }
+}
+
+// remove admin
+const removeAdmin = async (req, res) => {
+    try {
+        const adminId = req.body.id;
+        const admin = await userModel.findById(adminId);
+        
+        if (!admin) {
+            return res.json({success: false, message: "Admin not found"});
+        }
+
+        // Optional: Prevent deleting self (would need req.body.userId from auth middleware)
+        // For now, we allow it, but frontend should handle visual feedback.
+
+        await userModel.findByIdAndDelete(adminId);
+        res.json({success: true, message: "Admin removed successfully"});
+    } catch (error) {
+        console.log(error);
+        res.json({success: false, message: "Error removing admin"});
     }
 }
 
@@ -213,4 +284,4 @@ const resetPassword = async (req, res) => {
     }
 }
 
-export { loginUser, registerUser, getProfile, updateProfile, addToWishlist, removeFromWishlist, getWishlist, forgotPassword, resetPassword };
+export { loginUser, registerUser, registerAdmin, listAdmins, removeAdmin, getProfile, updateProfile, addToWishlist, removeFromWishlist, getWishlist, forgotPassword, resetPassword };

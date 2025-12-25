@@ -7,7 +7,7 @@ const FoodFilter = () => {
   const { minPrice, setMinPrice, maxPrice, setMaxPrice, minRating, setMinRating } = useContext(StoreContext);
 
   return (
-    <div className='food-filter'>
+    <div className='food-filter' id='food-filter'>
       <div className="filter-group">
         <label>Price Range ($)</label>
         <div className="price-inputs">

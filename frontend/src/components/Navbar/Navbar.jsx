@@ -4,10 +4,12 @@ import "./NavbarSearch.css";
 import { assets } from "../../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
+import { Search, ShoppingBasket, User, ShoppingBag, LogOut, Heart } from "lucide-react";
 
 const Navbar = () => {
   const [menu, setMenu] = useState("home");
   const [showSearch, setShowSearch] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { getTotalCartAmount, token, setToken, searchTerm, setSearchTerm, setShowLogin } = useContext(StoreContext);
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
@@ -25,10 +27,41 @@ const Navbar = () => {
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+        scrollToSection("food-filter", "menu");
+    }
+  };
 
-  // Auto update menu khi scroll
+  const scrollToSection = (sectionId, menuName) => {
+    setMenu(menuName);
+    if (window.location.pathname === "/") {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+           element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 500);
+    }
+  };
+
   useEffect(() => {
     const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+
+      if (window.location.pathname !== "/") return;
+
       const sections = [
         { id: "footer", name: "contact-us" },
         { id: "app-download", name: "mobile-app" },
@@ -42,24 +75,22 @@ const Navbar = () => {
 
         if (section && section.offsetTop <= scrollPosition + 150) {
           setMenu(sections[i].name);
-          history.replaceState(null, "", `#${sections[i].id}`);
           return;
         }
       }
 
       if (scrollPosition < 200) {
         setMenu("home");
-        history.replaceState(null, "", window.location.pathname);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
-
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className="navbar">
+    <div className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <Link to="/">
         <img src={assets.logo} alt="" className="logo" />
       </Link>
@@ -78,7 +109,7 @@ const Navbar = () => {
 
         <a
           href="#explore-menu"
-          onClick={() => setMenu("menu")}
+          onClick={(e) => { e.preventDefault(); scrollToSection("explore-menu", "menu"); }}
           className={menu === "menu" ? "active" : ""}
         >
           Menu
@@ -86,7 +117,7 @@ const Navbar = () => {
 
         <a
           href="#app-download"
-          onClick={() => setMenu("mobile-app")}
+          onClick={(e) => { e.preventDefault(); scrollToSection("app-download", "mobile-app"); }}
           className={menu === "mobile-app" ? "active" : ""}
         >
           Mobile App
@@ -94,7 +125,7 @@ const Navbar = () => {
 
         <a
           href="#footer"
-          onClick={() => setMenu("contact-us")}
+          onClick={(e) => { e.preventDefault(); scrollToSection("footer", "contact-us"); }}
           className={menu === "contact-us" ? "active" : ""}
         >
           Contact Us
@@ -102,7 +133,7 @@ const Navbar = () => {
       </ul>
 
       <div className="navbar-right">
-        <div className={`navbar-search-container ${showSearch ? 'active' : ''}`}>
+        <form onSubmit={handleSearch} className={`navbar-search-container ${showSearch ? 'active' : ''}`}>
            {showSearch && (
             <input 
               ref={searchInputRef}
@@ -113,26 +144,26 @@ const Navbar = () => {
               className="navbar-search-input"
             />
            )}
-           <img src={assets.search_icon} alt="" onClick={toggleSearch} className="navbar-search-icon-btn"/>
-        </div>
+           <Search size={26} color="#49557e" onClick={showSearch ? handleSearch : toggleSearch} className="navbar-search-icon-btn" style={{cursor: 'pointer'}} />
+        </form>
 
         <div className="navbar-search-icon">
           <Link to="/cart">
-            <img src={assets.basket_icon} alt="" />
+            <ShoppingBasket size={26} color="#49557e" />
           </Link>
           <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
         {!token?<button onClick={()=>setShowLogin(true)}>Sign in</button>
         :<div className="navbar-profile">
-          <img src={assets.profile_icon} alt=""/>
+          <User size={26} color="#49557e" />
           <ul className="nav-profile-dropdown">
-            <li onClick={()=>navigate('/profile')}> <img src={assets.profile_icon}/><p>Profile</p></li>
+            <li onClick={()=>navigate('/profile')}> <User size={20} /><p>Profile</p></li>
             <hr />
-            <li onClick={()=>navigate('/wishlist')}> <img src={assets.bag_icon}/><p>Wishlist</p></li>
+            <li onClick={()=>navigate('/wishlist')}> <Heart size={20} /><p>Wishlist</p></li>
             <hr />
-            <li onClick={()=>navigate('/myorders')}> <img src={assets.bag_icon}/><p>Order</p></li>
+            <li onClick={()=>navigate('/myorders')}> <ShoppingBag size={20} /><p>Order</p></li>
             <hr />
-            <li onClick={logout}> <img src={assets.logout_icon}/><p>Logout</p></li>
+            <li onClick={logout}> <LogOut size={20} /><p>Logout</p></li>
           </ul>
         </div>}
 

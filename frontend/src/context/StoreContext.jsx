@@ -16,6 +16,23 @@ const StoreContextProvider = (props) => {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100);
   const [minRating, setMinRating] = useState(0);
+  const [settings, setSettings] = useState({
+    deliveryFee: 2, // Fallback default
+    taxRate: 0,
+    estimatedDeliveryTime: "30-45 min",
+    isStoreOpen: true
+  });
+
+  const fetchSettings = async () => {
+    try {
+        const response = await axios.get(url + "/api/settings/get");
+        if (response.data.success) {
+            setSettings(response.data.data);
+        }
+    } catch (error) {
+        console.error("Error fetching settings:", error);
+    }
+  }
 
   const addToCart = async (itemId) => {
     if (!cartItems[itemId]) {
@@ -93,9 +110,10 @@ const StoreContextProvider = (props) => {
   const getFinalAmount = () => {
     const total = getTotalCartAmount();
     if (total === 0) return 0;
-    const deliveryCharge = 2;
+    const deliveryCharge = settings.deliveryFee;
+    const taxAmount = (total * settings.taxRate) / 100;
     const discountAmount = (total * discount) / 100;
-    return total + deliveryCharge - discountAmount;
+    return total + deliveryCharge + taxAmount - discountAmount;
   };
 
   const fetchFoodList = async () => {
@@ -115,6 +133,7 @@ const StoreContextProvider = (props) => {
   useEffect(() => {
     async function loadData() {
       await fetchFoodList();
+      await fetchSettings();
       if (localStorage.getItem("token")) {
         setToken(localStorage.getItem("token"));
         await loadCartData(localStorage.getItem("token"));
@@ -149,7 +168,8 @@ const StoreContextProvider = (props) => {
     minPrice, setMinPrice,
     maxPrice, setMaxPrice,
     minRating, setMinRating,
-    deleteItemFromCart
+    deleteItemFromCart,
+    settings
   };
 
   return (

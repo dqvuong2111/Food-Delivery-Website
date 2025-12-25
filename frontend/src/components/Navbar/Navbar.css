@@ -7,21 +7,51 @@
   top: 0;
   z-index: 100;
   background-color: var(--bg-app);
-  transition: var(--transition-smooth);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar.scrolled {
+    padding: 8px 20px; /* Reverted to 20px */
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    margin-top: 5px; /* Reduced from 10px */
+    width: 100%; 
+}
+
+/* Base navbar adjustments */
+.navbar {
+  padding: 12px 0; /* Reduced from 16px */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--bg-app);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
 }
 
 .navbar .logo {
-  width: 120px; 
+  width: 110px; /* Reduced from 120px */
   transition: var(--transition-smooth);
   object-fit: contain;
+}
+
+.navbar.scrolled .logo {
+    width: 90px; /* Reduced from 100px */
 }
 
 .navbar-menu {
   display: flex;
   list-style: none;
-  gap: 32px;
+  gap: 28px; /* Slightly closer gap */
   color: var(--text-secondary);
-  font-size: 17px;
+  font-size: 16px; /* Reduced from 17px */
   font-weight: 500;
 }
 
@@ -38,18 +68,6 @@
 .navbar-menu .active {
   color: var(--text-primary);
   font-weight: 600;
-}
-
-.navbar-menu .active::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 3px;
-  background-color: var(--color-primary);
-  border-radius: var(--radius-full);
 }
 
 .navbar-right {
@@ -88,9 +106,9 @@
     justify-content: center;
 }
 
-.navbar-search-icon img, .navbar-profile img {
-    width: 24px;
-    height: 24px;
+.navbar-search-icon svg, .navbar-profile svg {
+    /* lucide icons control their own size via props usually, but we can enforce if needed */
+    transition: 0.3s;
 }
 
 /* Notification Dot */
@@ -174,8 +192,7 @@
   color: tomato;
 }
 
-.nav-profile-dropdown img {
-  width: 20px;
+.nav-profile-dropdown svg {
   opacity: 0.8;
 }
 

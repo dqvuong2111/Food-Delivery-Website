@@ -1,111 +1,145 @@
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 2%;
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-default);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: var(--shadow-sm);
+    height: var(--header-height);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4%;
+    background-color: var(--bg-white);
+    border-bottom: 1.5px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .logo {
-  width: 120px; 
-  transition: transform 0.2s;
-  object-fit: contain;
+    width: 40px; /* Adjust size */
+    height: auto;
 }
 
-.logo:hover {
-    transform: scale(1.02);
+.navbar-brand-text {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--primary);
+    letter-spacing: -0.5px;
 }
 
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
 }
 
-/* Notification Wrapper */
+/* Notification Bell */
 .notification-wrapper {
     position: relative;
+    cursor: pointer;
 }
 
 .notification-icon {
     position: relative;
-    cursor: pointer;
     color: var(--text-secondary);
-    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    transition: var(--transition-fast);
 }
 
 .notification-icon:hover {
-    background-color: var(--bg-secondary);
-    color: var(--color-primary);
+    background-color: #f9fafb;
+    color: var(--text-primary);
 }
 
-.badge {
+.notification-icon .badge {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    background-color: var(--color-error);
+    top: 6px;
+    right: 6px;
+    background-color: var(--danger);
     color: white;
     font-size: 10px;
     font-weight: 700;
-    width: 16px;
+    min-width: 16px;
     height: 16px;
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid white;
+    border: 2px solid var(--bg-white); /* Cutout effect */
 }
 
-/* Dropdown */
-.notification-dropdown {
+/* Profile */
+.profile-container {
+    position: relative;
+    cursor: pointer;
+}
+
+.profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid transparent;
+    transition: var(--transition-fast);
+}
+
+.profile-container:hover .profile {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+/* Dropdowns Common */
+.notification-dropdown, .profile-dropdown {
     position: absolute;
-    top: 50px;
-    right: -10px;
-    width: 280px;
-    background-color: white;
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-md);
+    top: 120%;
+    right: 0;
+    width: 320px;
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
-    z-index: 1000;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
     animation: fadeIn 0.2s ease-out;
+    transform-origin: top right;
+}
+
+.profile-dropdown {
+    width: 180px;
+    padding: 8px;
 }
 
 .dropdown-header {
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--border-default);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f9fafb;
+    background-color: #f8fafc;
 }
 
 .dropdown-header p {
     font-weight: 600;
-    font-size: 14px;
+    color: var(--text-primary);
 }
 
 .dropdown-header .count {
     font-size: 11px;
-    background-color: var(--color-primary);
-    color: white;
+    background-color: var(--primary-light);
+    color: var(--primary);
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: 12px;
+    font-weight: 600;
 }
 
 .dropdown-body {
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
 }
 
@@ -117,81 +151,89 @@
 }
 
 .notif-item {
-    padding: 12px 15px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     gap: 12px;
-    align-items: flex-start;
-    border-bottom: 1px solid var(--border-default);
     cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.notif-item:last-child {
-    border-bottom: none;
+    transition: var(--transition-fast);
+    align-items: start;
 }
 
 .notif-item:hover {
-    background-color: #f8fafc;
+    background-color: #f9fafb;
 }
 
 .notif-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--color-success);
+    background-color: var(--primary);
     border-radius: 50%;
     margin-top: 6px;
     flex-shrink: 0;
 }
 
 .notif-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex: 1;
 }
 
 .notif-title {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-primary);
+    margin-bottom: 2px;
 }
 
 .notif-desc {
     font-size: 12px;
     color: var(--text-secondary);
+    margin-bottom: 4px;
 }
 
 .notif-time {
     font-size: 11px;
     color: var(--text-tertiary);
-    margin-top: 2px;
 }
 
 .dropdown-footer {
-    padding: 10px;
+    padding: 12px;
     text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--color-primary);
-    border-top: 1px solid var(--border-default);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
     cursor: pointer;
-    transition: background-color 0.2s;
+    border-top: 1px solid var(--border-color);
+    transition: background 0.2s;
 }
 
 .dropdown-footer:hover {
+    background-color: var(--primary-light);
+}
+
+/* Profile Dropdown Items */
+.profile-dropdown li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 14px;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+.profile-dropdown li:hover {
     background-color: #f9fafb;
+    color: var(--primary);
 }
 
-.profile {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--bg-secondary);
-  transition: all 0.2s;
-  cursor: pointer;
+.profile-dropdown li svg {
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
 }
 
-.profile:hover {
-    border-color: var(--color-primary);
-    transform: scale(1.05);
+.profile-dropdown li:hover svg {
+    color: var(--primary);
 }

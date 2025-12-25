@@ -5,6 +5,7 @@
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.4;
+  scroll-margin-top: 120px; /* Offset for sticky navbar */
 }
 
 .app-download p {
