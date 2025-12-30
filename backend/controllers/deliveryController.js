@@ -33,7 +33,7 @@ const getEstimate = async (req, res) => {
         console.log(`[Google Maps] Coords found:`, { pickupLoc, dropoffLoc });
 
         const quote = await getDeliveryQuote(pickupLoc, dropoffLoc);
-        console.log(`[Lalamove] Quote success:`, quote.quotationId);
+        console.log(`[Lalamove] Quote success:`, quote.data?.quotationId);
         
         res.json({ success: true, data: quote, locations: { pickup: pickupLoc, dropoff: dropoffLoc } });
     } catch (error) {

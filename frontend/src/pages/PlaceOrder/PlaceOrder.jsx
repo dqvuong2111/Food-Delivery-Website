@@ -41,10 +41,19 @@ const PlaceOrder = () => {
         }, { headers: { token } });
 
         if (response.data.success) {
-          // Lalamove trả về giá tiền trong response.data.data.totalAmount
-          const amount = parseFloat(response.data.data.data.totalAmount);
-          setDeliveryFee(amount);
-          setQuotationId(response.data.data.data.quotationId);
+          // Lalamove V3 structure: response.data.data (quote) -> .data -> .priceBreakdown -> .total
+          // Note: response.data is the axios body. response.data.data is what we sent from backend (quote).
+          // quote (from Lalamove) has a 'data' property.
+          
+          const lalamoveData = response.data.data.data;
+          const totalAmount = lalamoveData.priceBreakdown?.total || lalamoveData.totalAmount;
+          
+          const amount = parseFloat(totalAmount);
+          
+          if (!isNaN(amount)) {
+             setDeliveryFee(amount);
+          }
+          setQuotationId(lalamoveData.quotationId);
         }
       } catch (error) {
         console.error("Error fetching delivery fee:", error);
@@ -74,12 +83,25 @@ const PlaceOrder = () => {
       }
     });
 
+    const totalCart = getTotalCartAmount();
+    const currentDeliveryFee = Number(deliveryFee) || 0;
+    const currentDiscount = Number(discount) || 0;
+    
+    // Calculate total safely
+    let finalAmount = totalCart + currentDeliveryFee - (totalCart * currentDiscount / 100);
+    
+    // Ensure it's not NaN or negative
+    if (isNaN(finalAmount) || finalAmount < 0) finalAmount = 0;
+
     let orderData = {
       address: data,
       items: orderItems,
-      amount: getTotalCartAmount() + deliveryFee - (getTotalCartAmount() * discount / 100),
-      deliveryFee: deliveryFee,
-      quotationId: quotationId
+      amount: finalAmount,
+      deliveryFee: currentDeliveryFee,
+      quotationId: quotationId,
+      // Send full return URLs from client side to ensure correct port/domain
+      success_url: `${window.location.origin}/verify?success=true&orderId=`, 
+      cancel_url: `${window.location.origin}/verify?success=false&orderId=`,
     };
 
     let response = await axios.post(url + "/api/order/place", orderData, {
