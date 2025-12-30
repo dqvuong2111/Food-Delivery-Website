@@ -140,6 +140,112 @@
     transform: scale(1.1);
 }
 
+/* EDIT PRICE UI */
+.edit-price-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.edit-price-input {
+    width: 80px;
+    padding: 6px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.edit-price-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    background: white;
+}
+
+.action-btn.save {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid #d1fae5;
+}
+
+.action-btn.save:hover {
+    background-color: #10b981;
+    color: white;
+    border-color: #10b981;
+    transform: scale(1.05);
+}
+
+.action-btn.cancel {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fee2e2;
+}
+
+.action-btn.cancel:hover {
+    background-color: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    transform: scale(1.05);
+}
+
+.price-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px; /* More standard button radius */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.price-display:hover {
+    background-color: #fff7ed; /* Very light orange/primary background */
+    border-color: #ffedd5;
+}
+
+.price-display p {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.2s;
+}
+
+.price-display:hover p {
+    color: var(--primary); /* Change text color on hover */
+}
+
+.edit-icon {
+    color: #9ca3af; /* Gray-400 */
+    opacity: 0; /* Hidden by default or very subtle */
+    transform: translateX(-5px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.price-display:hover .edit-icon {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--primary); /* Brand color */
+}
+
 /* Responsive */
 @media (max-width: 800px) {
     .list-table-header, .list-table-row {
@@ -155,4 +261,15 @@
     .list-table-row .stock-toggle {
         display: none;
     }
+}
+
+/* Hide Spin Buttons (Arrows) for Number Input */
+.edit-price-input::-webkit-outer-spin-button,
+.edit-price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.edit-price-input[type=number] {
+  -moz-appearance: textfield;
 }

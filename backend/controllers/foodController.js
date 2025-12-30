@@ -76,4 +76,14 @@ const toggleAvailability = async (req, res) => {
     }
 }
 
-export { addFood, listFood, removeFood, toggleAvailability };
+const updateFood = async (req, res) => {
+    try {
+        const { id, price } = req.body;
+        await foodModel.findByIdAndUpdate(id, { price });
+        res.json({ success: true, message: "Food Updated" });
+    } catch (error) {
+        res.json({ success: false, message: "Error" });
+    }
+}
+
+export { addFood, listFood, removeFood, toggleAvailability, updateFood };
