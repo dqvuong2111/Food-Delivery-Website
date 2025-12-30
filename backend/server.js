@@ -49,6 +49,6 @@ app.get("/",(req,res)=>{
   res.send("API Working hehehehe");
 });
 
-app.listen(port, () => {
-  console.log(`Server Started on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server Started on http://localhost:${port} (IPv4)`);
 });

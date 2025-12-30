@@ -79,7 +79,12 @@ const createDelivery = async (req, res) => {
         order.deliveryStatus = "ASSIGNING_DRIVER";
         await order.save();
 
-        res.json({ success: true, message: "Delivery Assigned", data: deliveryData });
+        res.json({ 
+            success: true, 
+            message: "Delivery Assigned", 
+            data: deliveryData,
+            lalamoveOrderId: lalamoveOrderId // Send explicitly
+        });
 
     } catch (error) {
         console.error("[Create Delivery Error]", error.message);
@@ -92,10 +97,27 @@ const createDelivery = async (req, res) => {
 };
 
 const getDeliveryStatus = async (req, res) => {
-    const { deliveryId } = req.body; 
+    const { deliveryId, orderId } = req.body; 
     try {
-        const status = await trackOrder(deliveryId);
-        res.json({ success: true, data: status });
+        const lalamoveData = await trackOrder(deliveryId);
+        const lalamoveStatus = lalamoveData.status || lalamoveData.data?.status; // Check structure
+
+        if (orderId && lalamoveStatus) {
+            // Map Lalamove status to System status
+            let myStatus = "Processing";
+            if (lalamoveStatus === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
+            if (lalamoveStatus === "ON_GOING") myStatus = "Out for delivery";
+            if (lalamoveStatus === "PICKED_UP") myStatus = "Out for delivery";
+            if (lalamoveStatus === "COMPLETED") myStatus = "Delivered";
+            if (lalamoveStatus === "CANCELED" || lalamoveStatus === "EXPIRED") myStatus = "Cancelled";
+
+            await orderModel.findByIdAndUpdate(orderId, { 
+                deliveryStatus: lalamoveStatus,
+                status: myStatus
+            });
+        }
+
+        res.json({ success: true, data: lalamoveData });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }

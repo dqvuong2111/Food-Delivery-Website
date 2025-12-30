@@ -96,7 +96,7 @@ const Orders = ({ url }) => {
         }, { headers: { token } });
 
         if (createRes.data.success) {
-            toast.success("✅ Đã gọi xe thành công! Mã đơn: " + createRes.data.data.orderId);
+            toast.success("✅ Đã gọi xe thành công! Mã đơn: " + createRes.data.lalamoveOrderId);
             // Có thể cập nhật trạng thái đơn hàng sang "Out for delivery" luôn
             await axios.post(url + "/api/order/status", {
                 orderId: order._id,
@@ -114,6 +114,36 @@ const Orders = ({ url }) => {
         setLoadingDelivery(false);
     }
   };
+
+  const simulateLalamove = async (orderId, lalamoveStatus) => {
+      // Giả lập Webhook/Polling logic
+      // Map Lalamove status to System status
+      let myStatus = "Processing";
+      if (lalamoveStatus === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
+      if (lalamoveStatus === "ON_GOING") myStatus = "Out for delivery";
+      if (lalamoveStatus === "COMPLETED") myStatus = "Delivered";
+      if (lalamoveStatus === "CANCELED") myStatus = "Cancelled";
+
+      try {
+        const token = localStorage.getItem("token");
+        // Cập nhật trực tiếp vào DB thông qua API updateStatus (hoặc tạo API riêng nếu cần)
+        // Ở đây ta dùng updateStatus hiện có để đổi trạng thái đơn hàng hệ thống
+        await axios.post(url + "/api/order/status", {
+            orderId,
+            status: myStatus
+        }, {headers: {token}});
+
+        // Nếu muốn cập nhật cả field 'deliveryStatus' trong DB, ta cần API hỗ trợ.
+        // Hiện tại api/order/status chỉ update 'status'. 
+        // Tuy nhiên, để test UI phản hồi là đủ.
+        
+        toast.info(`🛠 Simulated: ${lalamoveStatus} -> ${myStatus}`);
+        await fetchAllOrder();
+      } catch (error) {
+          toast.error("Simulation failed");
+      }
+  }
+
   // -----------------------------
 
   useEffect(() => {
@@ -222,6 +252,19 @@ const Orders = ({ url }) => {
                          {loadingDelivery ? "Đang xử lý..." : "Gọi Lalamove"}
                       </button>
                   )}
+
+                  {/* --- DEV TOOLS: SIMULATE LALAMOVE STATUS --- */}
+                  {order.deliveryId && (
+                      <div className="dev-tools" style={{marginTop: '10px', borderTop: '1px dashed #ccc', paddingTop: '5px'}}>
+                          <p style={{fontSize: '10px', color: '#888', marginBottom: '4px'}}>🛠 TEST LALAMOVE STATUS:</p>
+                          <div style={{display: 'flex', gap: '4px', flexWrap: 'wrap'}}>
+                              <button onClick={() => simulateLalamove(order._id, 'ASSIGNING_DRIVER')} style={devBtnStyle}>Assigning</button>
+                              <button onClick={() => simulateLalamove(order._id, 'ON_GOING')} style={devBtnStyle}>On Going</button>
+                              <button onClick={() => simulateLalamove(order._id, 'COMPLETED')} style={{...devBtnStyle, backgroundColor: '#d1fae5', color: '#065f46'}}>Done</button>
+                              <button onClick={() => simulateLalamove(order._id, 'CANCELED')} style={{...devBtnStyle, backgroundColor: '#fee2e2', color: '#991b1b'}}>Cancel</button>
+                          </div>
+                      </div>
+                  )}
               </div>
             </div>
           </div>
@@ -229,6 +272,15 @@ const Orders = ({ url }) => {
       </div>
     </div>
   );
+};
+
+const devBtnStyle = {
+    padding: '4px 6px',
+    fontSize: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    backgroundColor: '#f3f4f6'
 };
 
 export default Orders;

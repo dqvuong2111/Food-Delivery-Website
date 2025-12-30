@@ -10,7 +10,8 @@ const orderSchema = new mongoose.Schema({
     payment: {type: Boolean, default: false},
     // Thêm các trường cho Delivery (Lalamove)
     deliveryId: {type: String, default: ""}, 
-    deliveryStatus: {type: String, default: ""} 
+    deliveryStatus: {type: String, default: ""},
+    isRead: {type: Boolean, default: false}
 })
 
 const orderModel = mongoose.models.order || mongoose.model("order", orderSchema);

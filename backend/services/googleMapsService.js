@@ -1,55 +1,43 @@
 import axios from 'axios';
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+// Chúng ta chuyển sang dùng OpenStreetMap (Nominatim)
+// Không cần API Key, nhưng cần tuân thủ Usage Policy (User-Agent header)
 
 export const getCoordinates = async (address) => {
-    // 1. Kiểm tra nếu không có Key hoặc Key bị lỗi quyền (như trường hợp hiện tại)
-    // Chúng ta sẽ "giả vờ" tìm thấy tọa độ để test Lalamove
-    
-    const useFallback = async (reason) => {
-        console.warn(`⚠️ [Google Maps Warning] ${reason}. Using fallback coordinates for testing.`);
-        
-        // Logic giả lập đơn giản:
-        // Nếu địa chỉ chứa "Hanoi" -> Trả về tọa độ ở Hà Nội
-        // Ngược lại -> Trả về tọa độ ở TP.HCM
-        
-        if (address.toLowerCase().includes("hanoi") || address.toLowerCase().includes("hà nội")) {
-            return {
-                lat: "21.028511",
-                lng: "105.804817",
-                address: "Hanoi, Vietnam (Fallback)"
-            };
-        }
-        
-        // Mặc định trả về tọa độ TP.HCM (Quận 1)
-        return {
-            lat: "10.7769",
-            lng: "106.7009",
-            address: "Ho Chi Minh City, Vietnam (Fallback)"
-        };
-    };
-
-    if (!GOOGLE_MAPS_API_KEY) {
-        return useFallback("API Key missing");
-    }
-
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_MAPS_API_KEY}`;
+    // URL của Nominatim API
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
 
     try {
-        const response = await axios.get(url);
-        if (response.data.status === 'OK') {
-            const location = response.data.results[0].geometry.location;
-            const formattedAddress = response.data.results[0].formatted_address;
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7'
+            }
+        });
+
+        if (response.data && response.data.length > 0) {
+            const result = response.data[0];
             return {
-                lat: location.lat.toString(),
-                lng: location.lng.toString(),
-                address: formattedAddress
+                lat: result.lat,
+                lng: result.lon, // Nominatim trả về 'lon', Lalamove cần 'lng'
+                address: result.display_name
             };
         } else {
-            // Nếu API Key sai hoặc bị chặn (REQUEST_DENIED), dùng fallback luôn
-            return useFallback(`API Error: ${response.data.status}`);
+            console.warn(`⚠️ [OSM Warning] Address not found: "${address}". Using fallback.`);
+            return useFallback("Address not found on OSM");
         }
     } catch (error) {
+        console.error("OSM Error:", error.message);
         return useFallback(`Network Error: ${error.message}`);
     }
+};
+
+// Fallback giữ nguyên để test nếu mạng lỗi
+const useFallback = (reason) => {
+    return {
+        lat: "21.028511", // Hà Nội
+        lng: "105.804817",
+        address: "Hanoi, Vietnam (Fallback)"
+    };
 };
