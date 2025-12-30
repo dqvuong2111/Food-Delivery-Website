@@ -15,6 +15,22 @@ A full-stack food delivery application with an Admin Panel, Frontend User Interf
 
 ## Setup Instructions
 
+### Quick Start (Run Everything)
+
+If you want to install and run all parts of the project (backend, frontend, admin) simultaneously from the root directory:
+
+1.  **Install all dependencies:**
+    ```bash
+    npm install
+    npm run install-all
+    ```
+
+2.  **Start all services:**
+    ```bash
+    npm run all
+    ```
+    This will start the backend, frontend, and admin panel concurrently.
+
 ### 1. Backend Setup
 
 1.  Navigate to the backend directory:

@@ -12,7 +12,7 @@ const Header = () => {
             const response = await axios.get(`${url}/api/banner/list`);
             if (response.data.success && response.data.data.length > 0) {
                 // Map backend images to full URLs
-                const bannerImages = response.data.data.map(item => `${url}/images/${item.image}`);
+                const bannerImages = response.data.data.map(item => item.image);
                 setBanners(bannerImages);
             }
         } catch (error) {
@@ -41,7 +41,7 @@ const Header = () => {
     }, [banners.length]);
 
   return (
-    <div className='header' data-aos="zoom-in" data-aos-duration="1500">
+    <div className='header'>
       {banners.map((bg, index) => (
         <div 
           key={index}

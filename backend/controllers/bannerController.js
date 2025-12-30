@@ -1,13 +1,23 @@
 import bannerModel from "../models/bannerModel.js";
 import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 
 // add banner
 const addBanner = async (req, res) => {
-    let image_filename = `${req.file.filename}`;
-    const banner = new bannerModel({
-        image: image_filename
-    });
     try {
+        let image_url = `${req.file.filename}`;
+
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                resource_type: 'image'
+            });
+            image_url = result.secure_url;
+            fs.unlink(req.file.path, () => {});
+        }
+
+        const banner = new bannerModel({
+            image: image_url
+        });
         await banner.save();
         res.json({ success: true, message: "Banner Added" });
     } catch (error) {
@@ -31,7 +41,6 @@ const listBanners = async (req, res) => {
 const removeBanner = async (req, res) => {
     try {
         const banner = await bannerModel.findById(req.body.id);
-        fs.unlink(`uploads/${banner.image}`, () => {});
         await bannerModel.findByIdAndDelete(req.body.id);
         res.json({ success: true, message: "Banner Removed" });
     } catch (error) {

@@ -83,7 +83,7 @@ const Banners = ({url}) => {
                     {banners.map((item, index) => {
                         return (
                             <div key={index} className="banner-item">
-                                <img src={`${url}/images/${item.image}`} alt="" />
+                                <img src={item.image} alt="" />
                                 <div className="banner-actions">
                                     <p onClick={() => removeBanner(item._id)} className='cursor'>
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

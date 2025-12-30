@@ -8,7 +8,6 @@ import { Search, ShoppingBasket, User, ShoppingBag, LogOut, Heart } from "lucide
 
 const Navbar = () => {
   const [menu, setMenu] = useState("home");
-  const [showSearch, setShowSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { getTotalCartAmount, token, setToken, searchTerm, setSearchTerm, setShowLogin } = useContext(StoreContext);
   const navigate = useNavigate();
@@ -20,15 +19,8 @@ const Navbar = () => {
     navigate("/");
   }
 
-  const toggleSearch = () => {
-    setShowSearch(!showSearch);
-    if (!showSearch) {
-      setTimeout(() => searchInputRef.current?.focus(), 100);
-    }
-  };
-
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (searchTerm.trim()) {
         scrollToSection("food-filter", "menu");
     }
@@ -133,8 +125,7 @@ const Navbar = () => {
       </ul>
 
       <div className="navbar-right">
-        <form onSubmit={handleSearch} className={`navbar-search-container ${showSearch ? 'active' : ''}`}>
-           {showSearch && (
+        <form onSubmit={handleSearch} className="navbar-search-container">
             <input 
               ref={searchInputRef}
               type="text" 
@@ -143,8 +134,7 @@ const Navbar = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="navbar-search-input"
             />
-           )}
-           <Search size={26} color="#49557e" onClick={showSearch ? handleSearch : toggleSearch} className="navbar-search-icon-btn" style={{cursor: 'pointer'}} />
+           <Search size={26} color="#49557e" onClick={handleSearch} className="navbar-search-icon-btn" style={{cursor: 'pointer'}} />
         </form>
 
         <div className="navbar-search-icon">

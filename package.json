@@ -13,11 +13,8 @@
     "all": "concurrently \"npm run start-backend\" \"npm run start-frontend\" \"npm run start-admin\""
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.2.1"
   },
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "concurrently": "^9.2.1"
-  }
+  "license": "ISC"
 }
