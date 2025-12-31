@@ -13,60 +13,60 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 // Custom Icons for Store and User
 const storeIcon = new L.Icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/3514/3514491.png', // Shop Icon
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
-    popupAnchor: [0, -35]
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/3514/3514491.png', // Shop Icon
+  iconSize: [35, 35],
+  iconAnchor: [17, 35],
+  popupAnchor: [0, -35]
 });
 
 const userIcon = new L.Icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Location Pin Icon
-    iconSize: [35, 35],
-    iconAnchor: [17, 35],
-    popupAnchor: [0, -35]
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Location Pin Icon
+  iconSize: [35, 35],
+  iconAnchor: [17, 35],
+  popupAnchor: [0, -35]
 });
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
 // Component to handle map clicks
 const LocationMarker = ({ setPosition, fetchAddress }) => {
-    useMapEvents({
-        click(e) {
-            setPosition(e.latlng);
-            fetchAddress(e.latlng.lat, e.latlng.lng);
-        },
-    });
-    return null;
+  useMapEvents({
+    click(e) {
+      setPosition(e.latlng);
+      fetchAddress(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
 };
 
 // Component to update map bounds to fit both markers
 const MapBoundsUpdater = ({ storePos, userPos }) => {
-    const map = useMap();
-    useEffect(() => {
-        if (storePos && userPos) {
-            const bounds = L.latLngBounds([storePos, userPos]);
-            map.fitBounds(bounds, { padding: [50, 50] });
-        } else if (userPos) {
-             map.flyTo(userPos, 15);
-        }
-    }, [storePos, userPos, map]);
-    return null;
+  const map = useMap();
+  useEffect(() => {
+    if (storePos && userPos) {
+      const bounds = L.latLngBounds([storePos, userPos]);
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (userPos) {
+      map.flyTo(userPos, 15);
+    }
+  }, [storePos, userPos, map]);
+  return null;
 };
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems, url, discount, getFinalAmount, settings } =
     useContext(StoreContext);
-  
+
   const [deliveryFee, setDeliveryFee] = useState(settings.deliveryFee);
   const [loadingFee, setLoadingFee] = useState(false);
   const [quotationId, setQuotationId] = useState("");
-  
+
   // Coordinates
   const STORE_POS = { lat: 21.007383, lng: 105.842130 }; // Số 1 Đại Cồ Việt, HUST
   const [userPosition, setUserPosition] = useState({ lat: 21.0285, lng: 105.8542 }); // Default User Pos
@@ -91,50 +91,50 @@ const PlaceOrder = () => {
 
   // Reverse Geocoding (Click on Map -> Get Address)
   const fetchAddressFromCoords = async (lat, lng) => {
-      try {
-          // Use OpenStreetMap Nominatim
-          const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-          if (response.data) {
-              const address = response.data.address;
-              setData(prev => ({
-                  ...prev,
-                  street: address.road || address.suburb || "",
-                  city: address.city || address.state || "Hanoi", // Map 'state' from OSM to 'city' field if needed, but UI has no state input
-                  country: "Vietnam", // Force Vietnam
-                  zipcode: address.postcode || ""
-              }));
-              setIsMapInteracted(true);
-          }
-      } catch (error) {
-          console.error("Reverse Geocoding Error:", error);
+    try {
+      // Use OpenStreetMap Nominatim
+      const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      if (response.data) {
+        const address = response.data.address;
+        setData(prev => ({
+          ...prev,
+          street: address.road || address.suburb || "",
+          city: address.city || address.state || "Hanoi", // Map 'state' from OSM to 'city' field if needed, but UI has no state input
+          country: "Vietnam", // Force Vietnam
+          zipcode: address.postcode || ""
+        }));
+        setIsMapInteracted(true);
       }
+    } catch (error) {
+      console.error("Reverse Geocoding Error:", error);
+    }
   }
 
   // Forward Geocoding (Type Address -> Move Map)
   const fetchCoordsFromAddress = async () => {
-      if (!data.street) return;
-      // Only fetch if user typed, not if map clicked (to avoid loop)
-      if (isMapInteracted) {
-          setIsMapInteracted(false);
-          return;
+    if (!data.street) return;
+    // Only fetch if user typed, not if map clicked (to avoid loop)
+    if (isMapInteracted) {
+      setIsMapInteracted(false);
+      return;
+    }
+
+    try {
+      const query = `${data.street}, ${data.city}, ${data.country}`;
+      const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+      if (response.data && response.data.length > 0) {
+        const result = response.data[0];
+        setUserPosition({ lat: parseFloat(result.lat), lng: parseFloat(result.lon) });
       }
-      
-      try {
-          const query = `${data.street}, ${data.city}, ${data.country}`;
-          const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
-          if (response.data && response.data.length > 0) {
-              const result = response.data[0];
-              setUserPosition({ lat: parseFloat(result.lat), lng: parseFloat(result.lon) });
-          }
-      } catch (error) {
-          console.error("Geocoding Error:", error);
-      }
+    } catch (error) {
+      console.error("Geocoding Error:", error);
+    }
   }
 
   // Debounce search when typing address
   useEffect(() => {
     const timer = setTimeout(() => {
-        fetchCoordsFromAddress();
+      fetchCoordsFromAddress();
     }, 1500);
     return () => clearTimeout(timer);
   }, [data.street, data.city]);
@@ -155,9 +155,9 @@ const PlaceOrder = () => {
           const lalamoveData = response.data.data.data;
           const totalAmount = lalamoveData.priceBreakdown?.total || lalamoveData.totalAmount;
           const amount = parseFloat(totalAmount);
-          
+
           if (!isNaN(amount)) {
-             setDeliveryFee(amount);
+            setDeliveryFee(amount);
           }
           setQuotationId(lalamoveData.quotationId);
         }
@@ -192,10 +192,10 @@ const PlaceOrder = () => {
     const totalCart = getTotalCartAmount();
     const currentDeliveryFee = Number(deliveryFee) || 0;
     const currentDiscount = Number(discount) || 0;
-    
+
     // Calculate total safely
     let finalAmount = totalCart + currentDeliveryFee - (totalCart * currentDiscount / 100);
-    
+
     // Ensure it's not NaN or negative
     if (isNaN(finalAmount) || finalAmount < 0) finalAmount = 0;
 
@@ -206,7 +206,7 @@ const PlaceOrder = () => {
       deliveryFee: currentDeliveryFee,
       quotationId: quotationId,
       // Send full return URLs from client side to ensure correct port/domain
-      success_url: `${window.location.origin}/verify?success=true&orderId=`, 
+      success_url: `${window.location.origin}/verify?success=true&orderId=`,
       cancel_url: `${window.location.origin}/verify?success=false&orderId=`,
     };
 
@@ -220,15 +220,15 @@ const PlaceOrder = () => {
       alert("Error placing order");
     }
   };
-  
-  
+
+
   const navigte = useNavigate()
 
   useEffect(() => {
-    if(!token){
+    if (!token) {
       navigte('/cart')
     }
-    else if(getTotalCartAmount() === 0) {
+    else if (getTotalCartAmount() === 0) {
       navigte('/cart')
     }
   }, [token])
@@ -239,7 +239,7 @@ const PlaceOrder = () => {
     <form onSubmit={placeOrder} className="place-order">
       <div className="place-order-left">
         <p className="title">Delivery Information</p>
-        
+
         {/* Contact Information Section */}
         <div className="form-section">
           <h3 className="section-title">Contact Details</h3>
@@ -254,55 +254,55 @@ const PlaceOrder = () => {
         {/* Address Information Section */}
         <div className="form-section">
           <h3 className="section-title">Delivery Address</h3>
-          
+
           {/* Google Maps Search Box */}
           <div className="search-box-container">
-             <input 
-                id="search-input"
-                type="text" 
-                placeholder="Search your location (or click on map)" 
-                className="address-search-input"
-                value={data.street} // Bind search box to street
-                onChange={(e) => setData({...data, street: e.target.value})}
-             />
-             <i className="search-icon">📍</i>
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Search your location (or click on map)"
+              className="address-search-input"
+              value={data.street} // Bind search box to street
+              onChange={(e) => setData({ ...data, street: e.target.value })}
+            />
+            <i className="search-icon">📍</i>
           </div>
 
           {/* Map Container */}
           <div id="map" className="map-container">
-             <MapContainer center={STORE_POS} zoom={13} scrollWheelZoom={true} style={{ height: "100%", width: "100%" }}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                
-                {/* Store Marker */}
-                <Marker position={STORE_POS} icon={storeIcon}>
-                    <Popup>
-                        <b>Cửa hàng (Bách Khoa)</b><br/>Số 1 Đại Cồ Việt
-                    </Popup>
-                </Marker>
+            <MapContainer center={STORE_POS} zoom={13} scrollWheelZoom={true} style={{ height: "100%", width: "100%" }}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
-                {/* User Marker */}
-                <Marker position={userPosition} icon={userIcon} draggable={true} 
-                    eventHandlers={{
-                        dragend: (e) => {
-                            const marker = e.target;
-                            const position = marker.getLatLng();
-                            setUserPosition(position);
-                            fetchAddressFromCoords(position.lat, position.lng);
-                        },
-                    }}
-                >
-                    <Popup>Vị trí nhận hàng</Popup>
-                </Marker>
+              {/* Store Marker */}
+              <Marker position={STORE_POS} icon={storeIcon}>
+                <Popup>
+                  <b>Cửa hàng (Bách Khoa)</b><br />Số 1 Đại Cồ Việt
+                </Popup>
+              </Marker>
 
-                {/* Route Line (Simple straight line for visual connection) */}
-                <Polyline positions={[STORE_POS, userPosition]} color="tomato" weight={3} dashArray="5, 10" />
+              {/* User Marker */}
+              <Marker position={userPosition} icon={userIcon} draggable={true}
+                eventHandlers={{
+                  dragend: (e) => {
+                    const marker = e.target;
+                    const position = marker.getLatLng();
+                    setUserPosition(position);
+                    fetchAddressFromCoords(position.lat, position.lng);
+                  },
+                }}
+              >
+                <Popup>Vị trí nhận hàng</Popup>
+              </Marker>
 
-                <LocationMarker setPosition={setUserPosition} fetchAddress={fetchAddressFromCoords} />
-                <MapBoundsUpdater storePos={STORE_POS} userPos={userPosition} />
-             </MapContainer>
+              {/* Route Line (Simple straight line for visual connection) */}
+              <Polyline positions={[STORE_POS, userPosition]} color="tomato" weight={3} dashArray="5, 10" />
+
+              <LocationMarker setPosition={setUserPosition} fetchAddress={fetchAddressFromCoords} />
+              <MapBoundsUpdater storePos={STORE_POS} userPos={userPosition} />
+            </MapContainer>
           </div>
 
           {/* Manual Address Fields (Can be auto-filled later) */}
@@ -314,7 +314,7 @@ const PlaceOrder = () => {
             </div>
             {/* Phone moved here for better layout, or kept above? Keeping zip for now but could hide if needed */}
             <div className="multi-fields">
-               <input required name="zipcode" onChange={onChangeHandler} value={data.zipcode} type="text" placeholder="Zip Code (Optional)" />
+              <input name="zipcode" onChange={onChangeHandler} value={data.zipcode} type="text" placeholder="Zip Code (Optional)" />
             </div>
           </div>
         </div>

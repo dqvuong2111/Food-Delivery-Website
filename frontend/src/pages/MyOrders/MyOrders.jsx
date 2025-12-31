@@ -19,8 +19,16 @@ const MyOrders = () => {
     const navigate = useNavigate();
 
     const fetchOrders = async () => {
-        const response = await axios.post(url + "/api/order/userorders", {}, { headers: { token } });
-        setData(response.data.data);
+        try {
+            const response = await axios.post(url + "/api/order/userorders", {}, { headers: { token } });
+            if (response.data.success) {
+                setData(response.data.data);
+            } else {
+                console.error(response.data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+        }
     }
 
     const handleRefreshStatus = async (order) => {

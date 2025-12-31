@@ -49,7 +49,7 @@ const placeOrder = async (req, res) => {
       cancelUrl = `${req.body.cancel_url}${orderId}`;
     } else {
       // Fallback: Use the origin of the request (most robust for local dev with varying ports)
-      const origin = req.headers.origin || req.body.origin || process.env.FRONTEND_URL || "http://localhost:5173";
+      const origin = req.headers.origin || req.body.origin || process.env.FRONTEND_URL || "http://localhost:5175";
       successUrl = `${origin}/verify?success=true&orderId=${orderId}`;
       cancelUrl = `${origin}/verify?success=false&orderId=${orderId}`;
     }
@@ -102,7 +102,7 @@ const userOrders = async (req, res) => {
 //Listing orders for admin panel
 const listOrder = async (req, res) => {
   try {
-    const orders = await orderModel.find({ payment: true }).sort({ date: -1 });
+    const orders = await orderModel.find({}).sort({ date: -1 });
     res.json({ success: true, data: orders })
 
   } catch (error) {
@@ -123,7 +123,7 @@ const updateStatus = async (req, res) => {
     res.json({ success: true, message: "Status updated" })
   } catch (error) {
     console.log(error);
-    res.json({ sucess: false, message: "Error" })
+    res.json({ success: false, message: "Error" })
   }
 }
 

@@ -15,6 +15,7 @@ import settingsRouter from "./routes/settingsRoute.js"
 import driverRouter from "./routes/driverRoute.js"
 import deliveryRouter from "./routes/deliveryRoute.js"
 import webhookRouter from "./routes/webhookRoute.js"
+import chatbotRouter from "./routes/chatbotRoute.js"
 import connectCloudinary from "./config/cloudinary.js";
 
 // app config
@@ -30,22 +31,23 @@ connectDB();
 connectCloudinary();
 
 // api endpoints
-app.use("/api/food",foodRouter)
-app.use("/images",express.static('uploads'))
-app.use("/api/user",userRouter)
-app.use("/api/driver",driverRouter)
-app.use("/api/delivery",deliveryRouter)
-app.use("/api/webhook",webhookRouter)
-app.use("/api/cart",cartRouter)
-app.use("/api/order",orderRouter)
-app.use("/api/coupon",couponRouter)
-app.use("/api/review",reviewRouter)
-app.use("/api/dashboard",dashboardRouter)
-app.use("/api/banner",bannerRouter)
-app.use("/api/category",categoryRouter)
-app.use("/api/settings",settingsRouter)
+app.use("/api/food", foodRouter)
+app.use("/images", express.static('uploads'))
+app.use("/api/user", userRouter)
+app.use("/api/driver", driverRouter)
+app.use("/api/delivery", deliveryRouter)
+app.use("/api/webhook", webhookRouter)
+app.use("/api/cart", cartRouter)
+app.use("/api/order", orderRouter)
+app.use("/api/coupon", couponRouter)
+app.use("/api/review", reviewRouter)
+app.use("/api/dashboard", dashboardRouter)
+app.use("/api/banner", bannerRouter)
+app.use("/api/category", categoryRouter)
+app.use("/api/settings", settingsRouter)
+app.use("/api/chatbot", chatbotRouter)
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
   res.send("API Working hehehehe");
 });
 

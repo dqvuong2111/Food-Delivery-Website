@@ -9,13 +9,21 @@ const Orders = ({ url }) => {
   const [loadingDelivery, setLoadingDelivery] = useState(false); // Loading state for delivery request
 
   const fetchAllOrder = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    const response = await axios.get(url + "/api/order/list", { headers: { token } });
-    if (response.data.success) {
-      setOrders(response.data.data);
-    } else {
-      toast.error("Error fetching orders");
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please login again");
+        return;
+      }
+      const response = await axios.get(url + "/api/order/list", { headers: { token } });
+      if (response.data.success) {
+        setOrders(response.data.data);
+      } else {
+        toast.error(response.data.message || "Error fetching orders");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Network error or server is down");
     }
   };
 

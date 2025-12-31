@@ -7,49 +7,49 @@ import nodemailer from 'nodemailer';
 
 // login user
 const loginUser = async (req, res) => {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
     try {
-        const user = await userModel.findOne({email});
-        if(!user){
-            return res.json({success:false, message:"User does not exist"});
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.json({ success: false, message: "User does not exist" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
-        if(!isMatch){
-            return res.json({success:false, message:"Invalid credentials"});
+        if (!isMatch) {
+            return res.json({ success: false, message: "Invalid credentials" });
         }
 
         const token = createToken(user._id);
-        res.json({success:true, token, role: user.role});
+        res.json({ success: true, token, role: user.role });
 
     } catch (error) {
         console.log(error);
-        res.json({success:false, message:"Error"});
+        res.json({ success: false, message: "Error" });
     }
 }
 
 const createToken = (id) => {
-    return jwt.sign({id}, process.env.JWT_SECRET);
+    return jwt.sign({ id }, process.env.JWT_SECRET);
 }
 
 // register user
 const registerUser = async (req, res) => {
-    const {name, password, email} = req.body;
+    const { name, password, email } = req.body;
     try {
         // checking is user already exists
-        const exists = await userModel.findOne({email});
-        if(exists){
-            return res.json({success:false, message:"User already exists"});
+        const exists = await userModel.findOne({ email });
+        if (exists) {
+            return res.json({ success: false, message: "User already exists" });
         }
 
         // validating email format & strong password
-        if(!validator.isEmail(email)){
-            return res.json({success:false, message:"Please enter a valid email"});
+        if (!validator.isEmail(email)) {
+            return res.json({ success: false, message: "Please enter a valid email" });
         }
 
-        if(password.length < 8){
-            return res.json({success:false, message:"Please enter a strong password"});
+        if (password.length < 8) {
+            return res.json({ success: false, message: "Please enter a strong password" });
         }
 
         // hashing user password
@@ -57,40 +57,40 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser = new userModel({
-            name:name,
-            email:email,
-            password:hashedPassword
+            name: name,
+            email: email,
+            password: hashedPassword
         })
 
         await newUser.save();
 
         const user = await newUser.save()
         const token = createToken(user._id)
-        res.json({success:true, token})
+        res.json({ success: true, token })
 
     } catch (error) {
         console.log(error);
-        res.json({success:false, message:"Registering user failed"})
+        res.json({ success: false, message: "Registering user failed" })
     }
 }
 
 // register admin (only accessible by existing admins)
 const registerAdmin = async (req, res) => {
-    const {name, password, email} = req.body;
+    const { name, password, email } = req.body;
     try {
         // checking is user already exists
-        const exists = await userModel.findOne({email});
-        if(exists){
-            return res.json({success:false, message:"User already exists"});
+        const exists = await userModel.findOne({ email });
+        if (exists) {
+            return res.json({ success: false, message: "User already exists" });
         }
 
         // validating email format & strong password
-        if(!validator.isEmail(email)){
-            return res.json({success:false, message:"Please enter a valid email"});
+        if (!validator.isEmail(email)) {
+            return res.json({ success: false, message: "Please enter a valid email" });
         }
 
-        if(password.length < 8){
-            return res.json({success:false, message:"Please enter a strong password"});
+        if (password.length < 8) {
+            return res.json({ success: false, message: "Please enter a strong password" });
         }
 
         // hashing user password
@@ -105,22 +105,22 @@ const registerAdmin = async (req, res) => {
         })
 
         await newAdmin.save();
-        res.json({success:true, message: "Admin account created successfully"})
+        res.json({ success: true, message: "Admin account created successfully" })
 
     } catch (error) {
         console.log(error);
-        res.json({success:false, message:"Error creating admin"})
+        res.json({ success: false, message: "Error creating admin" })
     }
 }
 
 // list all admins
 const listAdmins = async (req, res) => {
     try {
-        const admins = await userModel.find({role: "admin"}).select("-password");
-        res.json({success: true, data: admins});
+        const admins = await userModel.find({ role: "admin" }).select("-password");
+        res.json({ success: true, data: admins });
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "Error fetching admins"});
+        res.json({ success: false, message: "Error fetching admins" });
     }
 }
 
@@ -129,19 +129,19 @@ const removeAdmin = async (req, res) => {
     try {
         const adminId = req.body.id;
         const admin = await userModel.findById(adminId);
-        
+
         if (!admin) {
-            return res.json({success: false, message: "Admin not found"});
+            return res.json({ success: false, message: "Admin not found" });
         }
 
         // Optional: Prevent deleting self (would need req.body.userId from auth middleware)
         // For now, we allow it, but frontend should handle visual feedback.
 
         await userModel.findByIdAndDelete(adminId);
-        res.json({success: true, message: "Admin removed successfully"});
+        res.json({ success: true, message: "Admin removed successfully" });
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "Error removing admin"});
+        res.json({ success: false, message: "Error removing admin" });
     }
 }
 
@@ -149,12 +149,14 @@ const removeAdmin = async (req, res) => {
 const getProfile = async (req, res) => {
     try {
         const user = await userModel.findById(req.body.userId);
-        res.json({ success: true, userData: {
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            address: user.address
-        }});
+        res.json({
+            success: true, userData: {
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address
+            }
+        });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: "Error" });
@@ -228,7 +230,7 @@ const forgotPassword = async (req, res) => {
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         await user.save();
 
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+        const resetUrl = `http://localhost:5175/reset-password/${resetToken}`;
 
         const transporter = nodemailer.createTransport({
             service: 'Gmail',
