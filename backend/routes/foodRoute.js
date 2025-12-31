@@ -3,7 +3,8 @@ import {
   addFood,
   listFood,
   removeFood,
-  toggleAvailability
+  toggleAvailability,
+  updateFood
 } from "../controllers/foodController.js";
 import multer from "multer";
 import adminAuth from "../middleware/adminAuth.js";
@@ -22,5 +23,6 @@ foodRoute.post("/add", adminAuth, upload.single("image"), addFood);
 foodRoute.get("/list", listFood);
 foodRoute.post("/remove", adminAuth, removeFood);
 foodRoute.post("/toggle", adminAuth, toggleAvailability);
+foodRoute.post("/update", adminAuth, updateFood);
 
 export default foodRoute;

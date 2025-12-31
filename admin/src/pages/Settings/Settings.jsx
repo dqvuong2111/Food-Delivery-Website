@@ -109,7 +109,7 @@ const Settings = ({url}) => {
 
                 <div className="settings-grid">
                     <div className="settings-group">
-                        <p>Delivery Fee ($)</p>
+                        <p>Delivery Fee (₫)</p>
                         <input type="number" name="deliveryFee" value={settings.deliveryFee} onChange={onChangeHandler} required />
                     </div>
                     

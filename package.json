@@ -16,5 +16,8 @@
     "concurrently": "^9.2.1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.4.2"
+  }
 }

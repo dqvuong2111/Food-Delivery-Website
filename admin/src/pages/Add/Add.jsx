@@ -104,8 +104,8 @@ const Add = ({url}) => {
               </select>
             </div>
             <div className="add-product-price flex-col">
-                <p> Product Price</p>
-                <input onChange={onChangeHandler} value={data.price} type="number" name='price' placeholder="$20" required />
+                <p> Product Price (₫)</p>
+                <input onChange={onChangeHandler} value={data.price} type="number" name='price' placeholder="20000" required />
             </div>       
         </div>
         <button type="submit" className="add-btn"> Add</button>

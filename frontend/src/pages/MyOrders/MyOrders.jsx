@@ -11,15 +11,30 @@ import { useNavigate } from 'react-router-dom';
 
 const MyOrders = () => {
 
-    const {url, token, addToCart} = useContext(StoreContext);
+    const { url, token, addToCart } = useContext(StoreContext);
     const [data, setData] = useState([]);
     const [showRatePopup, setShowRatePopup] = useState(false);
     const [selectedOrderItems, setSelectedOrderItems] = useState([]);
     const navigate = useNavigate();
 
     const fetchOrders = async () => {
-        const response = await axios.post(url+"/api/order/userorders", {}, {headers:{token}});
+        const response = await axios.post(url + "/api/order/userorders", {}, { headers: { token } });
         setData(response.data.data);
+    }
+
+    const handleRefreshStatus = async (order) => {
+        if (order.deliveryId) {
+            try {
+                await axios.post(url + "/api/delivery/status",
+                    { deliveryId: order.deliveryId, orderId: order._id },
+                    { headers: { token } }
+                );
+                toast.success("Status updated");
+            } catch (error) {
+                console.error("Sync failed", error);
+            }
+        }
+        await fetchOrders();
     }
 
     const handleRate = (items) => {
@@ -35,9 +50,9 @@ const MyOrders = () => {
         } else {
             // Delivered: Add old items to cart
             for (const item of order.items) {
-                 for(let i=0; i<item.quantity; i++) {
-                     await addToCart(item._id); 
-                 }
+                for (let i = 0; i < item.quantity; i++) {
+                    await addToCart(item._id);
+                }
             }
             toast.success("Items added to cart!");
             navigate('/cart'); // Optional: redirect to cart for convenience
@@ -45,16 +60,35 @@ const MyOrders = () => {
     }
 
     useEffect(() => {
-        if(token) {
+        if (token) {
             fetchOrders();
+            // Poll for updates every 5 seconds
+            const interval = setInterval(() => {
+                fetchOrders();
+            }, 5000);
+
+            // Clean up interval on unmount
+            return () => clearInterval(interval);
         }
     }, [token])
 
+    // Scroll to top only on mount, not on every token change (to prevent annoying jumps during polls if token re-evaluates)
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [])
+
     const getStatusStep = (status) => {
         if (status === "Cancelled") return -1;
-        const steps = ["Pending", "Confirmed", "Food Processing", "Out for delivery", "Delivered"];
-        const index = steps.indexOf(status);
-        return index === -1 ? 0 : index + 1;
+        const statusMap = {
+            "Pending": 1,
+            "Confirmed": 2,
+            "Food Processing": 3,
+            "Processing": 3, // Support legacy status
+            "Finding Driver": 4,
+            "Out for delivery": 5,
+            "Delivered": 6
+        };
+        return statusMap[status] || 0;
     }
 
     return (
@@ -69,24 +103,26 @@ const MyOrders = () => {
                             <div className="order-header-info">
                                 <img src={assets.parcel_icon} alt="" />
                                 <p>{order.items.map((item, idx) => {
-                                    if(idx === order.items.length-1) {
-                                        return item.name+" x "+item.quantity
+                                    if (idx === order.items.length - 1) {
+                                        return item.name + " x " + item.quantity
                                     }
-                                    else{
-                                        return item.name+" x "+item.quantity+", "                                    
+                                    else {
+                                        return item.name + " x " + item.quantity + ", "
                                     }
                                 })}</p>
                             </div>
-                            
+
                             <div className="order-details-grid">
-                                <p className="price">${order.amount}.00</p>
+                                <p className="price">{order.amount.toLocaleString()} ₫</p>
                                 <p>Items: {order.items.length}</p>
                             </div>
 
+                            <p className="order-status-text">Status: <b>{order.status}</b></p>
+
                             {order.status === 'Cancelled' ? (
                                 <div className="order-cancelled-banner">
-                                    <p style={{fontWeight: 'bold', marginBottom: '5px'}}>❌ Order Cancelled</p>
-                                    <p style={{fontSize: '13px'}}>Reason: {order.cancellationReason || "No reason provided"}</p>
+                                    <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>❌ Order Cancelled</p>
+                                    <p style={{ fontSize: '13px' }}>Reason: {order.cancellationReason || "No reason provided"}</p>
                                 </div>
                             ) : (
                                 <div className="order-tracker">
@@ -107,18 +143,23 @@ const MyOrders = () => {
                                     <div className={`line ${currentStep >= 4 ? 'active' : ''}`}></div>
                                     <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
                                         <div className="step-circle">4</div>
-                                        <span>On Way</span>
+                                        <span>Finding Driver</span>
                                     </div>
                                     <div className={`line ${currentStep >= 5 ? 'active' : ''}`}></div>
                                     <div className={`step ${currentStep >= 5 ? 'active' : ''}`}>
                                         <div className="step-circle">5</div>
+                                        <span>On Way</span>
+                                    </div>
+                                    <div className={`line ${currentStep >= 6 ? 'active' : ''}`}></div>
+                                    <div className={`step ${currentStep >= 6 ? 'active' : ''}`}>
+                                        <div className="step-circle">6</div>
                                         <span>Delivered</span>
                                     </div>
                                 </div>
                             )}
-                            
+
                             <div className="order-actions">
-                                <button onClick={fetchOrders} className="track-btn">Refresh Status</button>
+                                <button onClick={() => handleRefreshStatus(order)} className="track-btn">Refresh Status</button>
                                 {order.status === 'Delivered' && (
                                     <button onClick={() => handleRate(order.items)} className="rate-btn">Rate Order</button>
                                 )}

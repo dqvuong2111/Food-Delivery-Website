@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import userModel from "./models/userModel.js";
 import dotenv from "dotenv";
 dotenv.config();
-import {connectDB} from "./config/db.js";
+import { connectDB } from "./config/db.js";
 
 const createAdmin = async () => {
     await connectDB();
@@ -12,8 +12,8 @@ const createAdmin = async () => {
     const password = "admin";
     const name = "Admin";
 
-    const exists = await userModel.findOne({email});
-    if(exists){
+    const exists = await userModel.findOne({ email });
+    if (exists) {
         console.log("User already exists. Updating role to admin...");
         exists.role = "admin";
         await exists.save();

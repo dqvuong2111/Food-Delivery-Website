@@ -43,7 +43,7 @@ const FoodItem = ({id, name, price, description, image, rating, reviews}) => {
                 <p className="food-item-desc">{description}</p>
                 
                 <div className="food-item-action">
-                    <p className="food-item-price">${price}</p>
+                    <p className="food-item-price">{price.toLocaleString()} ₫</p>
                     {count === 0 ? (
                         <button className="food-item-add-btn" onClick={() => addToCart(id)}>
                             Add to Cart

@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import "./Verify.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 const Verify = () => {
@@ -16,9 +17,11 @@ const Verify = () => {
       orderId,
     });
     if (response.data.success) {
+      toast.success("Order Placed Successfully");
       navigate("/myorders");
     } else {
-      navigate("/");
+      toast.error("Payment Cancelled / Failed");
+      navigate("/cart"); // Redirect to Cart so user can try again
     }
   };
   useEffect(() => {

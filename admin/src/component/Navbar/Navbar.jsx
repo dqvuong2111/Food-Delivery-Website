@@ -3,11 +3,16 @@ import "./Navbar.css"
 import {assets} from "../../assets/assets"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 
 const Navbar = ({url, setToken}) => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  // Ref to track if it's the first load to prevent toast spam
+  const firstLoad = useRef(true);
+  const previousCount = useRef(0);
+
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
@@ -36,12 +41,26 @@ const Navbar = ({url, setToken}) => {
                 const allOrders = response.data.data;
                 const unreadOrders = allOrders.filter(order => !order.isRead).reverse();
                 setNotifications(unreadOrders);
+
+                // Smart Notification Logic
+                if (firstLoad.current) {
+                    // First load: Just sync state, don't toast
+                    previousCount.current = unreadOrders.length;
+                    firstLoad.current = false;
+                } else {
+                    // Subsequent polls: Check if new orders arrived
+                    if (unreadOrders.length > previousCount.current) {
+                        // Play sound or show toast
+                        toast.info(`🔔 You have ${unreadOrders.length - previousCount.current} new order(s)!`);
+                    }
+                    previousCount.current = unreadOrders.length;
+                }
             }
         } catch (error) {}
     };
 
     fetchOrders();
-    const interval = setInterval(fetchOrders, 10000);
+    const interval = setInterval(fetchOrders, 5000); // Poll every 5s
     return () => clearInterval(interval);
   }, [url]);
 
@@ -109,7 +128,7 @@ const Navbar = ({url, setToken}) => {
                                         <div className="notif-content">
                                             <p className="notif-title">New Order #{order._id.slice(-4)}</p>
                                             <p className="notif-desc">
-                                                {order.items.length} items • ${order.amount}
+                                                {order.items.length} items • {order.amount.toLocaleString()} ₫
                                             </p>
                                             <p className="notif-time">
                                                 {new Date(order.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

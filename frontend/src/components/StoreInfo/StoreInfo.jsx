@@ -32,7 +32,7 @@ const StoreInfo = () => {
                     </div>
                     <div className="info-text">
                         <span>Delivery Fee</span>
-                        <p>${settings.deliveryFee}</p>
+                        <p>Distance Based</p>
                     </div>
                 </div>
 

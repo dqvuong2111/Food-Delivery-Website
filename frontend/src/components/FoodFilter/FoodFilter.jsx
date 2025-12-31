@@ -9,7 +9,7 @@ const FoodFilter = () => {
   return (
     <div className='food-filter' id='food-filter'>
       <div className="filter-group">
-        <label>Price Range ($)</label>
+        <label>Price Range (₫)</label>
         <div className="price-inputs">
             <input type="number" value={minPrice} onChange={(e) => setMinPrice(Number(e.target.value))} placeholder="Min" />
             <span>-</span>

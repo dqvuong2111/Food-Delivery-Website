@@ -30,7 +30,7 @@ const Dashboard = ({url}) => {
                 <div className="stats-grid">
                     <div className="stat-card">
                         <h4>Total Revenue</h4>
-                        <p>${stats.totalRevenue}</p>
+                        <p>{stats.totalRevenue.toLocaleString()} ₫</p>
                     </div>
                     <div className="stat-card">
                         <h4>Total Orders</h4>

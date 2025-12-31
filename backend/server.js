@@ -12,6 +12,9 @@ import dashboardRouter from "./routes/dashboardRoute.js"
 import bannerRouter from "./routes/bannerRoute.js"
 import categoryRouter from "./routes/categoryRoute.js"
 import settingsRouter from "./routes/settingsRoute.js"
+import driverRouter from "./routes/driverRoute.js"
+import deliveryRouter from "./routes/deliveryRoute.js"
+import webhookRouter from "./routes/webhookRoute.js"
 import connectCloudinary from "./config/cloudinary.js";
 
 // app config
@@ -30,6 +33,9 @@ connectCloudinary();
 app.use("/api/food",foodRouter)
 app.use("/images",express.static('uploads'))
 app.use("/api/user",userRouter)
+app.use("/api/driver",driverRouter)
+app.use("/api/delivery",deliveryRouter)
+app.use("/api/webhook",webhookRouter)
 app.use("/api/cart",cartRouter)
 app.use("/api/order",orderRouter)
 app.use("/api/coupon",couponRouter)
@@ -43,6 +49,6 @@ app.get("/",(req,res)=>{
   res.send("API Working hehehehe");
 });
 
-app.listen(port, () => {
-  console.log(`Server Started on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server Started on http://localhost:${port} (IPv4)`);
 });

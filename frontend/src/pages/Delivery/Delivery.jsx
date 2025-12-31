@@ -19,7 +19,7 @@ const Delivery = () => {
 
         <div className="delivery-card">
             <h2>Delivery Fees</h2>
-            <p>We charge a flat delivery fee of $2.00 for all orders under $50. Orders above $50 qualify for free delivery!</p>
+            <p>Our delivery fees are calculated based on the distance from our store to your location. The exact fee will be displayed at checkout before you pay.</p>
         </div>
       </div>
     </div>

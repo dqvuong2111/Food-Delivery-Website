@@ -10,20 +10,16 @@ const Profile = () => {
   const [userData, setUserData] = useState({
     name: "",
     email: "",
-    phone: "",
-    address: {
-      street: "",
-      city: "",
-      state: "",
-      zipcode: "",
-      country: ""
-    }
+    phone: ""
   })
 
   const fetchProfile = async () => {
     const response = await axios.get(url + "/api/user/get-profile", { headers: { token } })
     if (response.data.success) {
-      setUserData(response.data.userData)
+      // If the backend still returns address, we just ignore it for the UI state here or spread it
+      // But based on request, we only want to manage personal info.
+      const { name, email, phone } = response.data.userData;
+      setUserData({ name, email, phone: phone || "" });
     } else {
       toast.error(response.data.message)
     }
@@ -32,13 +28,7 @@ const Profile = () => {
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-    
-    if (name.includes('.')) {
-        const [parent, child] = name.split('.');
-        setUserData(data => ({...data, [parent]: {...data[parent], [child]: value}}))
-    } else {
-        setUserData(data => ({ ...data, [name]: value }))
-    }
+    setUserData(data => ({ ...data, [name]: value }))
   }
 
   const onSubmitHandler = async (event) => {
@@ -67,21 +57,13 @@ const Profile = () => {
         </div>
         <div className="profile-group">
           <label>Email</label>
-          <input name='email' value={userData.email} type="email" placeholder='Your Email' disabled />
+          <input name='email' value={userData.email} type="email" placeholder='Your Email' disabled className="disabled-input" />
         </div>
         <div className="profile-group">
           <label>Phone</label>
           <input name='phone' onChange={onChangeHandler} value={userData.phone} type="text" placeholder='Phone Number' />
         </div>
-        <h3>Address</h3>
-        <div className="multi-fields">
-          <input required name='address.street' onChange={onChangeHandler} value={userData.address.street} type="text" placeholder='Street' />
-          <input required name='address.city' onChange={onChangeHandler} value={userData.address.city} type="text" placeholder='City' />
-        </div>
-        <div className="multi-fields">
-          <input required name='address.zipcode' onChange={onChangeHandler} value={userData.address.zipcode} type="text" placeholder='Zip code' />
-          <input required name='address.country' onChange={onChangeHandler} value={userData.address.country} type="text" placeholder='Country' />
-        </div>
+        
         <button type='submit'>Save Changes</button>
       </form>
     </div>

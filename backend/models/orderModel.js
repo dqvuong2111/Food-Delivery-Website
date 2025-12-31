@@ -6,11 +6,13 @@ const orderSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   address: { type: Object, required: true },
   status: { type: String, default: "Pending" },
-  date: { type: Date, default: Date.now() },
+  date: { type: Date, default: Date.now },
   payment: { type: Boolean, default: false },
-  isRead: { type: Boolean, default: false },
-  cancellationReason: { type: String, default: "" },
-});
-const orderModel =
-  mongoose.models.order || mongoose.model("order", orderSchema);
+  // Thêm các trường cho Delivery (Lalamove)
+  deliveryId: { type: String, default: "" },
+  deliveryStatus: { type: String, default: "" },
+  isRead: { type: Boolean, default: false }
+})
+
+const orderModel = mongoose.models.order || mongoose.model("order", orderSchema);
 export default orderModel;

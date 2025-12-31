@@ -68,9 +68,9 @@ const Cart = () => {
                                                 <p className="cart-product-cat">{item.category}</p>
                                             </div>
                                         </td>
-                                        <td>${item.price}</td>
+                                        <td>{item.price.toLocaleString()} ₫</td>
                                         <td className="cart-quantity-cell">{cartItems[item._id]}</td>
-                                        <td className="cart-total-cell">${item.price * cartItems[item._id]}</td>
+                                        <td className="cart-total-cell">{(item.price * cartItems[item._id]).toLocaleString()} ₫</td>
                                         <td>
                                             <div className="cart-delete-btn" onClick={() => deleteItemFromCart(item._id)}>
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -111,11 +111,11 @@ const Cart = () => {
                     <div className="summary-details">
                         <div className="summary-row">
                             <p>Subtotal</p>
-                            <p>${getTotalCartAmount()}</p>
+                            <p>{getTotalCartAmount().toLocaleString()} ₫</p>
                         </div>
                         <div className="summary-row">
                             <p>Delivery Fee</p>
-                            <p>${getTotalCartAmount() === 0 ? 0 : 2}</p>
+                            <p>Calculated at checkout</p>
                         </div>
                         {discount > 0 && (
                             <div className="summary-row discount">
@@ -126,7 +126,7 @@ const Cart = () => {
                         <hr className="total-divider"/>
                         <div className="summary-row total">
                             <p>Total</p>
-                            <p>${getFinalAmount()}</p>
+                            <p>{getFinalAmount().toLocaleString()} ₫</p>
                         </div>
                     </div>
 
