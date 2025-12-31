@@ -2,6 +2,8 @@ import React, { useContext } from 'react'
 import './Wishlist.css'
 import { StoreContext } from '../../context/StoreContext'
 import FoodItem from '../../components/FoodItem/FoodItem'
+import EmptyState from '../../components/EmptyState/EmptyState'
+import { assets } from '../../assets/assets'
 
 const Wishlist = () => {
 
@@ -17,7 +19,15 @@ const Wishlist = () => {
           }
         })}
       </div>
-      {Object.keys(wishlist).length === 0 && <p className='empty-wishlist'>Your wishlist is empty.</p>}
+      {Object.keys(wishlist).length === 0 && (
+        <EmptyState
+          image={assets.bag_icon}
+          title="Your wishlist is empty"
+          message="Looks like you haven't saved any items yet."
+          btnText="Browse Menu"
+          btnPath="/"
+        />
+      )}
     </div>
   )
 }

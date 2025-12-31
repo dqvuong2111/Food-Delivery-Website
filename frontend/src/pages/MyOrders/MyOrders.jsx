@@ -8,6 +8,7 @@ import { assets } from '../../assets/assets';
 import RateOrderPopup from '../../components/RateOrderPopup/RateOrderPopup';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import EmptyState from '../../components/EmptyState/EmptyState';
 
 const MyOrders = () => {
 
@@ -96,82 +97,92 @@ const MyOrders = () => {
             {showRatePopup && <RateOrderPopup setShowRatePopup={setShowRatePopup} orderItems={selectedOrderItems} />}
             <h2>My Orders</h2>
             <div className="container">
-                {data.map((order, index) => {
-                    const currentStep = getStatusStep(order.status);
-                    return (
-                        <div key={index} className={`my-orders-order ${order.status === 'Cancelled' ? 'cancelled-order' : ''}`}>
-                            <div className="order-header-info">
-                                <img src={assets.parcel_icon} alt="" />
-                                <p>{order.items.map((item, idx) => {
-                                    if (idx === order.items.length - 1) {
-                                        return item.name + " x " + item.quantity
-                                    }
-                                    else {
-                                        return item.name + " x " + item.quantity + ", "
-                                    }
-                                })}</p>
-                            </div>
-
-                            <div className="order-details-grid">
-                                <p className="price">{order.amount.toLocaleString()} ₫</p>
-                                <p>Items: {order.items.length}</p>
-                            </div>
-
-                            <p className="order-status-text">Status: <b>{order.status}</b></p>
-
-                            {order.status === 'Cancelled' ? (
-                                <div className="order-cancelled-banner">
-                                    <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>❌ Order Cancelled</p>
-                                    <p style={{ fontSize: '13px' }}>Reason: {order.cancellationReason || "No reason provided"}</p>
+                {data.length === 0 ? (
+                    <EmptyState
+                        image={assets.parcel_icon}
+                        title="No orders yet"
+                        message="You haven't placed any orders yet. Go to the menu to satisfy your hunger!"
+                        btnText="Browse Menu"
+                        btnPath="/"
+                    />
+                ) : (
+                    data.map((order, index) => {
+                        const currentStep = getStatusStep(order.status);
+                        return (
+                            <div key={index} className={`my-orders-order ${order.status === 'Cancelled' ? 'cancelled-order' : ''}`}>
+                                <div className="order-header-info">
+                                    <img src={assets.parcel_icon} alt="" />
+                                    <p>{order.items.map((item, idx) => {
+                                        if (idx === order.items.length - 1) {
+                                            return item.name + " x " + item.quantity
+                                        }
+                                        else {
+                                            return item.name + " x " + item.quantity + ", "
+                                        }
+                                    })}</p>
                                 </div>
-                            ) : (
-                                <div className="order-tracker">
-                                    <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-                                        <div className="step-circle">1</div>
-                                        <span>Pending</span>
-                                    </div>
-                                    <div className={`line ${currentStep >= 2 ? 'active' : ''}`}></div>
-                                    <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-                                        <div className="step-circle">2</div>
-                                        <span>Confirmed</span>
-                                    </div>
-                                    <div className={`line ${currentStep >= 3 ? 'active' : ''}`}></div>
-                                    <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-                                        <div className="step-circle">3</div>
-                                        <span>Processing</span>
-                                    </div>
-                                    <div className={`line ${currentStep >= 4 ? 'active' : ''}`}></div>
-                                    <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
-                                        <div className="step-circle">4</div>
-                                        <span>Finding Driver</span>
-                                    </div>
-                                    <div className={`line ${currentStep >= 5 ? 'active' : ''}`}></div>
-                                    <div className={`step ${currentStep >= 5 ? 'active' : ''}`}>
-                                        <div className="step-circle">5</div>
-                                        <span>On Way</span>
-                                    </div>
-                                    <div className={`line ${currentStep >= 6 ? 'active' : ''}`}></div>
-                                    <div className={`step ${currentStep >= 6 ? 'active' : ''}`}>
-                                        <div className="step-circle">6</div>
-                                        <span>Delivered</span>
-                                    </div>
-                                </div>
-                            )}
 
-                            <div className="order-actions">
-                                <button onClick={() => handleRefreshStatus(order)} className="track-btn">Refresh Status</button>
-                                {order.status === 'Delivered' && (
-                                    <button onClick={() => handleRate(order.items)} className="rate-btn">Rate Order</button>
+                                <div className="order-details-grid">
+                                    <p className="price">{order.amount.toLocaleString()} ₫</p>
+                                    <p>Items: {order.items.length}</p>
+                                </div>
+
+                                <p className="order-status-text">Status: <b>{order.status}</b></p>
+
+                                {order.status === 'Cancelled' ? (
+                                    <div className="order-cancelled-banner">
+                                        <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>❌ Order Cancelled</p>
+                                        <p style={{ fontSize: '13px' }}>Reason: {order.cancellationReason || "No reason provided"}</p>
+                                    </div>
+                                ) : (
+                                    <div className="order-tracker">
+                                        <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
+                                            <div className="step-circle">1</div>
+                                            <span>Pending</span>
+                                        </div>
+                                        <div className={`line ${currentStep >= 2 ? 'active' : ''}`}></div>
+                                        <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
+                                            <div className="step-circle">2</div>
+                                            <span>Confirmed</span>
+                                        </div>
+                                        <div className={`line ${currentStep >= 3 ? 'active' : ''}`}></div>
+                                        <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
+                                            <div className="step-circle">3</div>
+                                            <span>Processing</span>
+                                        </div>
+                                        <div className={`line ${currentStep >= 4 ? 'active' : ''}`}></div>
+                                        <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
+                                            <div className="step-circle">4</div>
+                                            <span>Finding Driver</span>
+                                        </div>
+                                        <div className={`line ${currentStep >= 5 ? 'active' : ''}`}></div>
+                                        <div className={`step ${currentStep >= 5 ? 'active' : ''}`}>
+                                            <div className="step-circle">5</div>
+                                            <span>On Way</span>
+                                        </div>
+                                        <div className={`line ${currentStep >= 6 ? 'active' : ''}`}></div>
+                                        <div className={`step ${currentStep >= 6 ? 'active' : ''}`}>
+                                            <div className="step-circle">6</div>
+                                            <span>Delivered</span>
+                                        </div>
+                                    </div>
                                 )}
-                                {(order.status === 'Cancelled' || order.status === 'Delivered') && (
-                                    <button onClick={() => handleReorder(order)} className="reorder-btn">
-                                        {order.status === 'Cancelled' ? "Choose New Dishes" : "Reorder"}
-                                    </button>
-                                )}
+
+                                <div className="order-actions">
+                                    <button onClick={() => handleRefreshStatus(order)} className="track-btn">Refresh Status</button>
+                                    {order.status === 'Delivered' && (
+                                        <button onClick={() => handleRate(order.items)} className="rate-btn">Rate Order</button>
+                                    )}
+                                    {(order.status === 'Cancelled' || order.status === 'Delivered') && (
+                                        <button onClick={() => handleReorder(order)} className="reorder-btn">
+                                            {order.status === 'Cancelled' ? "Choose New Dishes" : "Reorder"}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )
-                })}
+                        )
+                    })
+                )}
             </div>
         </div>
     )

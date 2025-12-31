@@ -24,7 +24,7 @@ const getFoodReviews = async (req, res) => {
     try {
         const { foodId } = req.body;
         const reviews = await reviewModel.find({ foodId });
-        
+
         let avgRating = 0;
         if (reviews.length > 0) {
             const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
@@ -38,4 +38,27 @@ const getFoodReviews = async (req, res) => {
     }
 }
 
-export { addReview, getFoodReviews };
+// Get all reviews for homepage
+const getAllReviews = async (req, res) => {
+    try {
+        const reviews = await reviewModel.find({})
+            .sort({ date: -1 })
+            .limit(10); // Limit to latest 10
+
+        const reviewsWithDetails = await Promise.all(reviews.map(async (review) => {
+            const food = await foodModel.findById(review.foodId);
+            return {
+                ...review._doc,
+                foodName: food ? food.name : "Unknown Item",
+                foodImage: food ? food.image : ""
+            }
+        }));
+
+        res.json({ success: true, data: reviewsWithDetails });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Error" });
+    }
+}
+
+export { addReview, getFoodReviews, getAllReviews };

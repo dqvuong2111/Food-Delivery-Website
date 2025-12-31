@@ -5,12 +5,13 @@
   --bg-app: #FAFAFA;
   --bg-surface: #FFFFFF;
   --bg-secondary: #F5F5F5;
-  
+
   --text-primary: #111111;
   --text-secondary: #555555;
   --text-tertiary: #888888;
-  
-  --color-primary: #ff4c24; /* Adjusted tomato for vibrancy */
+
+  --color-primary: #ff4c24;
+  /* Adjusted tomato for vibrancy */
   --color-primary-soft: rgba(255, 76, 36, 0.1);
   --color-success: #34C759;
   --color-warning: #FF9500;
@@ -64,10 +65,12 @@ ul {
 }
 
 .app {
-  width: 95%; /* Reverted to 95% */
+  width: 95%;
+  /* Reverted to 95% */
   max-width: 1600px;
   margin: auto;
-  padding: 0; /* Removed padding so navbar sits at top */
+  padding: 0;
+  /* Removed padding so navbar sits at top */
 }
 
 /* Utility Classes derived from giaovienai */
@@ -96,10 +99,12 @@ ul {
 .btn-primary {
   background-color: var(--color-primary);
   color: white;
-  padding: 14px 36px; /* Larger padding */
+  padding: 14px 36px;
+  /* Larger padding */
   border-radius: var(--radius-full);
   border: none;
-  font-size: 16px; /* Larger text */
+  font-size: 16px;
+  /* Larger text */
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition-smooth);
@@ -107,15 +112,24 @@ ul {
 }
 
 .btn-primary:hover {
-  transform: translateY(-3px); /* More movement */
-  box-shadow: 0 6px 15px rgba(255, 76, 36, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 76, 36, 0.4);
+  /* Stronger glow */
   background-color: #e0431f;
+  filter: brightness(1.1);
 }
 
 /* Animations */
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
