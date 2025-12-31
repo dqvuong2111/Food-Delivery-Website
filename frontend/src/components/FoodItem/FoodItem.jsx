@@ -3,12 +3,12 @@ import './FoodItem.css'
 import { assets } from '../../assets/assets'
 import { StoreContext } from '../../context/StoreContext'
 
-const FoodItem = ({id, name, price, description, image, rating, reviews}) => {
+const FoodItem = ({ id, name, price, description, image, rating, reviews, delay }) => {
 
     const { url, addToCart, removeFromCart, cartItems, wishlist, addToWishlist, removeFromWishlist } = useContext(StoreContext);
     const count = cartItems[id] || 0;
     const isWishlisted = wishlist[id];
-  
+
     const toggleWishlist = () => {
         if (isWishlisted) {
             removeFromWishlist(id);
@@ -18,16 +18,16 @@ const FoodItem = ({id, name, price, description, image, rating, reviews}) => {
     }
 
     return (
-        <div className='food-item' data-aos="fade-up">
+        <div className='food-item' data-aos="fade-up" data-aos-delay={delay}>
             <div className="food-item-img-container">
-                <img className='food-item-image' src={image.startsWith("http") ? image : url+"/images/"+image} alt="" />
+                <img className='food-item-image' src={image.startsWith("http") ? image : url + "/images/" + image} alt="" />
                 <div className="wishlist-icon" onClick={toggleWishlist}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill={isWishlisted ? "tomato" : "white"} stroke="tomato" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
                 </div>
             </div>
-            
+
             <div className="food-item-info">
                 <div className="food-item-name-rating">
                     <p>{name}</p>
@@ -41,7 +41,7 @@ const FoodItem = ({id, name, price, description, image, rating, reviews}) => {
                     </div>
                 </div>
                 <p className="food-item-desc">{description}</p>
-                
+
                 <div className="food-item-action">
                     <p className="food-item-price">{price.toLocaleString()} ₫</p>
                     {count === 0 ? (

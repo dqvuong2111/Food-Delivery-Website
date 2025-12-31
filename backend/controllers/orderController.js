@@ -11,6 +11,7 @@ const placeOrder = async (req, res) => {
       userId: req.body.userId,
       items: req.body.items,
       amount: req.body.amount,
+      deliveryFee: req.body.deliveryFee, // Save delivery fee to order history
       address: req.body.address,
     });
     await newOrder.save();
@@ -33,7 +34,7 @@ const placeOrder = async (req, res) => {
         product_data: {
           name: "Delivery Charges",
         },
-        unit_amount: 2 * 25000,
+        unit_amount: req.body.deliveryFee, // Use actual fee from frontend
       },
       quantity: 1,
     });
@@ -42,15 +43,15 @@ const placeOrder = async (req, res) => {
     // Priority: 1. Explicit params from frontend, 2. Origin header, 3. Env var, 4. Localhost default
     let successUrl, cancelUrl;
     const orderId = newOrder._id.toString();
-    
+
     if (req.body.success_url && req.body.cancel_url) {
-        successUrl = `${req.body.success_url}${orderId}`;
-        cancelUrl = `${req.body.cancel_url}${orderId}`;
+      successUrl = `${req.body.success_url}${orderId}`;
+      cancelUrl = `${req.body.cancel_url}${orderId}`;
     } else {
-        // Fallback: Use the origin of the request (most robust for local dev with varying ports)
-        const origin = req.headers.origin || req.body.origin || process.env.FRONTEND_URL || "http://localhost:5173";
-        successUrl = `${origin}/verify?success=true&orderId=${orderId}`;
-        cancelUrl = `${origin}/verify?success=false&orderId=${orderId}`;
+      // Fallback: Use the origin of the request (most robust for local dev with varying ports)
+      const origin = req.headers.origin || req.body.origin || process.env.FRONTEND_URL || "http://localhost:5173";
+      successUrl = `${origin}/verify?success=true&orderId=${orderId}`;
+      cancelUrl = `${origin}/verify?success=false&orderId=${orderId}`;
     }
 
     console.log(`[Stripe Redirect] Success: ${successUrl}, Cancel: ${cancelUrl}`);
@@ -88,53 +89,53 @@ const verifyOrder = async (req, res) => {
 };
 
 //user orders for frontend
-const userOrders = async(req, res) => {
-  try{
-    const orders = await orderModel.find({userId:req.body.userId, payment: true}).sort({date: -1})
-    res.json({success:true, data:orders})
+const userOrders = async (req, res) => {
+  try {
+    const orders = await orderModel.find({ userId: req.body.userId, payment: true }).sort({ date: -1 })
+    res.json({ success: true, data: orders })
   } catch (error) {
     console.log(error);
-    res.json({success:false, message:"Error"})
+    res.json({ success: false, message: "Error" })
   }
 }
 
 //Listing orders for admin panel
-const listOrder=async(req, res) => {
+const listOrder = async (req, res) => {
   try {
-    const orders = await orderModel.find({ payment: true }).sort({date: -1});
-    res.json({success:true, data:orders})
+    const orders = await orderModel.find({ payment: true }).sort({ date: -1 });
+    res.json({ success: true, data: orders })
 
-  }catch (error) {
+  } catch (error) {
     console.log(error);
-    res.json({success:false, message:"Error"})
+    res.json({ success: false, message: "Error" })
   }
 }
 
 // api for updating order status 
-const updateStatus = async(req, res) => {
+const updateStatus = async (req, res) => {
   try {
     const { orderId, status, cancellationReason } = req.body;
     let updateData = { status };
     if (cancellationReason) {
-        updateData.cancellationReason = cancellationReason;
+      updateData.cancellationReason = cancellationReason;
     }
     await orderModel.findByIdAndUpdate(orderId, updateData);
-    res.json({success:true, message:"Status updated"})
-  } catch(error) {
+    res.json({ success: true, message: "Status updated" })
+  } catch (error) {
     console.log(error);
-    res.json({sucess:false, message:"Error"})
+    res.json({ sucess: false, message: "Error" })
   }
 }
 
 // Mark order as read
 const markAsRead = async (req, res) => {
-    try {
-        await orderModel.findByIdAndUpdate(req.body.orderId, { isRead: true });
-        res.json({ success: true, message: "Marked as read" });
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error" });
-    }
+  try {
+    await orderModel.findByIdAndUpdate(req.body.orderId, { isRead: true });
+    res.json({ success: true, message: "Marked as read" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
 }
 
-export { placeOrder, verifyOrder, userOrders,listOrder, updateStatus, markAsRead};
+export { placeOrder, verifyOrder, userOrders, listOrder, updateStatus, markAsRead };
