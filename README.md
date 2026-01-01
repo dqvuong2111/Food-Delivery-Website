@@ -60,28 +60,79 @@ CLOUDINARY_API_SECRET=your_api_secret
 
 ---
 
-## 🐳 Docker Deployment
+## 🐳 Docker Deployment (Recommended for New Users)
 
-### Run with Docker
+### Step 1: Install Docker Desktop
+
+1. Download Docker Desktop from: https://www.docker.com/products/docker-desktop/
+2. Run the installer and follow the setup wizard
+3. **Restart your computer** after installation
+4. Open Docker Desktop and wait until it says "Docker is running"
+
+### Step 2: Clone the Project
 
 ```bash
-# Build and start all containers
-docker-compose up --build
-
-# Run in background
-docker-compose up -d --build
-
-# Stop containers
-docker-compose down
+git clone https://github.com/dqvuong2111/Food-Delivery-Website.git
+cd Food-Delivery-Website
 ```
 
-### Docker Ports
+### Step 3: Configure Environment Variables
+
+Create `backend/.env` file with your credentials (ask the project owner for values):
+
+```env
+MONGO_URI=mongodb+srv://your_connection_string
+JWT_SECRET=your_secret_key
+STRIPE_SECRET_KEY=your_stripe_key
+MISTRAL_API_KEY=your_mistral_key
+```
+
+### Step 4: Build and Run with Docker
+
+Open a terminal in the project folder and run:
+
+```bash
+# First time - build and start all containers
+docker-compose up --build
+
+# This will take 5-10 minutes on first run
+# Wait until you see "Server Started on http://localhost:4000"
+```
+
+### Step 5: Access the Application
+
+Open your browser and go to:
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost |
-| Admin | http://localhost:8080 |
-| Backend API | http://localhost:4000 |
+| 🌐 Frontend (Customer) | http://localhost |
+| 🔧 Admin Panel | http://localhost:8080 |
+| 🔌 Backend API | http://localhost:4000 |
+
+### Common Docker Commands
+
+```bash
+# Start containers (in background)
+docker-compose up -d
+
+# Stop containers
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
+
+# View logs
+docker-compose logs -f
+
+# Remove all containers and images (clean start)
+docker-compose down --rmi all
+```
+
+### Troubleshooting
+
+- **Port in use error**: Stop other apps using ports 80, 4000, or 8080
+- **Docker not starting**: Restart Docker Desktop
+- **Build failed**: Run `docker-compose down --rmi all` then try again
 
 ---
 
