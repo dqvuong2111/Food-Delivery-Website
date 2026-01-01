@@ -1,107 +1,179 @@
-# Food Delivery Website
+# 🍔 BKFood - Food Delivery Website
 
-A full-stack food delivery application with an Admin Panel, Frontend User Interface, and Backend API.
+A full-stack MERN (MongoDB, Express, React, Node.js) food delivery application with admin panel, AI chatbot, and delivery integration.
 
-## Project Structure
+## 📁 Project Structure
 
-*   `backend`: Node.js/Express API server.
-*   `frontend`: React.js user interface for customers.
-*   `admin`: React.js dashboard for restaurant management.
+```
+FoodDeliveryWebsite/
+├── frontend/          # Customer-facing React app (port 5175)
+├── admin/             # Admin panel React app (port 5174)
+├── backend/           # Node.js API server (port 4000)
+└── docker-compose.yml # Docker orchestration
+```
 
-## Prerequisites
+---
 
-*   [Node.js](https://nodejs.org/) (v14 or higher)
-*   [MongoDB](https://www.mongodb.com/) (Local or Atlas)
+## 🚀 Quick Start (Development)
 
-## Setup Instructions
+### Prerequisites
+- Node.js 18+
+- MongoDB (local or Atlas)
 
-### Quick Start (Run Everything)
+### Install & Run
 
-If you want to install and run all parts of the project (backend, frontend, admin) simultaneously from the root directory:
+```bash
+# Install all dependencies
+npm install
+npm run install-all
 
-1.  **Install all dependencies:**
-    ```bash
-    npm install
-    npm run install-all
-    ```
+# Start all services
+npm run all
+```
 
-2.  **Start all services:**
-    ```bash
-    npm run all
-    ```
-    This will start the backend, frontend, and admin panel concurrently.
+Or run each separately:
 
-### 1. Backend Setup
+```bash
+# Backend (port 4000)
+cd backend && npm run dev
 
-1.  Navigate to the backend directory:
-    ```bash
-    cd backend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Create a `.env` file in the `backend` folder and add your credentials:
-    ```env
-    PORT=4000
-    MONGO_URI=your_mongodb_connection_string
-    JWT_SECRET=your_jwt_secret
-    STRIPE_SECRET_KEY=your_stripe_secret_key
-    EMAIL_USER=your_email@gmail.com
-    EMAIL_PASS=your_app_password
-    ```
-    *(Note: For Gmail, use an App Password, not your login password)*
+# Frontend (port 5175)
+cd frontend && npm run dev
 
-4.  Start the server:
-    ```bash
-    npm run server
-    ```
-    The server will run on `http://localhost:4000`.
+# Admin (port 5174)
+cd admin && npm run dev
+```
 
-### 2. Frontend Setup
+### Environment Variables
 
-1.  Navigate to the frontend directory:
-    ```bash
-    cd frontend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-    The frontend will run on `http://localhost:5173`.
+Create `backend/.env`:
 
-### 3. Admin Panel Setup
+```env
+MONGO_URI=mongodb+srv://your_connection_string
+JWT_SECRET=your_secret_key
+STRIPE_SECRET_KEY=your_stripe_key
+MISTRAL_API_KEY=your_mistral_key
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
 
-1.  Navigate to the admin directory:
-    ```bash
-    cd admin
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Start the admin dashboard:
-    ```bash
-    npm run dev
-    ```
-    The admin panel will run on `http://localhost:5174` (or similar).
+---
 
-## Features
+## 🐳 Docker Deployment (Recommended for New Users)
 
-*   **User Authentication:** Login, Register, Forgot Password.
-*   **Product Management:** Admin can add/remove food items.
-*   **Cart & Ordering:** Add to cart, place orders, payment integration.
-*   **Profile Management:** Update user details, view order history.
-*   **Wishlist:** Save favorite items.
+### Step 1: Install Docker Desktop
 
-## Contributing
+1. Download Docker Desktop from: https://www.docker.com/products/docker-desktop/
+2. Run the installer and follow the setup wizard
+3. **Restart your computer** after installation
+4. Open Docker Desktop and wait until it says "Docker is running"
 
-1.  Fork the repository.
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
+### Step 2: Clone the Project
+
+```bash
+git clone https://github.com/dqvuong2111/Food-Delivery-Website.git
+cd Food-Delivery-Website
+```
+
+### Step 3: Configure Environment Variables
+
+Create `backend/.env` file with your credentials (ask the project owner for values):
+
+```env
+MONGO_URI=mongodb+srv://your_connection_string
+JWT_SECRET=your_secret_key
+STRIPE_SECRET_KEY=your_stripe_key
+MISTRAL_API_KEY=your_mistral_key
+```
+
+### Step 4: Build and Run with Docker
+
+Open a terminal in the project folder and run:
+
+```bash
+# First time - build and start all containers
+docker-compose up --build
+
+# This will take 5-10 minutes on first run
+# Wait until you see "Server Started on http://localhost:4000"
+```
+
+### Step 5: Access the Application
+
+Open your browser and go to:
+
+| Service | URL |
+|---------|-----|
+| 🌐 Frontend (Customer) | http://localhost |
+| 🔧 Admin Panel | http://localhost:8080 |
+| 🔌 Backend API | http://localhost:4000 |
+
+### Common Docker Commands
+
+```bash
+# Start containers (in background)
+docker-compose up -d
+
+# Stop containers
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
+
+# View logs
+docker-compose logs -f
+
+# Remove all containers and images (clean start)
+docker-compose down --rmi all
+```
+
+### Troubleshooting
+
+- **Port in use error**: Stop other apps using ports 80, 4000, or 8080
+- **Docker not starting**: Restart Docker Desktop
+- **Build failed**: Run `docker-compose down --rmi all` then try again
+
+---
+
+## 👤 Default Admin Account
+
+```
+Email: admin@example.com
+Password: admin
+```
+
+Reset admin: `cd backend && node createAdmin.js`
+
+---
+
+## ✨ Features
+
+### Customer
+- 🛒 Browse menu & cart
+- 💳 Stripe payments
+- 📍 Interactive delivery map
+- 🤖 AI Chatbot
+- ⭐ Order ratings
+- ❤️ Wishlist
+
+### Admin
+- 📊 Dashboard analytics
+- 🍕 Food management
+- 📦 Order management
+- 🎫 Coupons
+- ⚙️ Store settings
+
+---
+
+## 🔧 Tech Stack
+
+**Frontend:** React, Vite, Leaflet Maps, AOS  
+**Backend:** Node.js, Express, MongoDB  
+**Others:** Stripe, Mistral AI, Docker, Nginx
+
+---
+
+## 📝 License
+
+MIT License

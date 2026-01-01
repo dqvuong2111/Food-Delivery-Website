@@ -1,0 +1,47 @@
+# BKFood Delivery Website - Docker Compose
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build: ./backend
+    container_name: bkfood-backend
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped
+    networks:
+      - bkfood-network
+
+  # Frontend (User Website)
+  frontend:
+    build: ./frontend
+    container_name: bkfood-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - bkfood-network
+
+  # Admin Panel
+  admin:
+    build: ./admin
+    container_name: bkfood-admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - bkfood-network
+
+networks:
+  bkfood-network:
+    driver: bridge
