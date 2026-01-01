@@ -7,9 +7,10 @@ const orderSchema = new mongoose.Schema({
   deliveryFee: { type: Number, default: 0 },
   address: { type: Object, required: true },
   status: { type: String, default: "Pending" },
+  cancellationReason: { type: String, default: "" },
   date: { type: Date, default: Date.now },
   payment: { type: Boolean, default: false },
-  // Thêm các trường cho Delivery (Lalamove)
+  // Delivery fields (Lalamove)
   deliveryId: { type: String, default: "" },
   deliveryStatus: { type: String, default: "" },
   isRead: { type: Boolean, default: false }

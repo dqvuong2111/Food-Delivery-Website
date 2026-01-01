@@ -25,12 +25,12 @@ const StoreContextProvider = (props) => {
 
   const fetchSettings = async () => {
     try {
-        const response = await axios.get(url + "/api/settings/get");
-        if (response.data.success) {
-            setSettings(response.data.data);
-        }
+      const response = await axios.get(url + "/api/settings/get");
+      if (response.data.success) {
+        setSettings(response.data.data);
+      }
     } catch (error) {
-        console.error("Error fetching settings:", error);
+      console.error("Error fetching settings:", error);
     }
   }
 
@@ -87,12 +87,12 @@ const StoreContextProvider = (props) => {
 
   const deleteItemFromCart = async (itemId) => {
     setCartItems((prev) => {
-        const newCart = { ...prev };
-        delete newCart[itemId];
-        return newCart;
+      const newCart = { ...prev };
+      delete newCart[itemId];
+      return newCart;
     });
     if (token) {
-        await axios.post(url + "/api/cart/delete", { itemId }, { headers: { token } });
+      await axios.post(url + "/api/cart/delete", { itemId }, { headers: { token } });
     }
   }
 
@@ -107,13 +107,22 @@ const StoreContextProvider = (props) => {
     return totalAmount;
   };
 
-  const getFinalAmount = () => {
+  // Get cart total without delivery fee (for cart page)
+  const getCartTotal = () => {
     const total = getTotalCartAmount();
     if (total === 0) return 0;
-    const deliveryCharge = settings.deliveryFee;
+    const discountAmount = (total * discount) / 100;
+    return total - discountAmount;
+  };
+
+  // Get final amount with delivery fee (for checkout page)
+  const getFinalAmount = (deliveryFee = 0) => {
+    const total = getTotalCartAmount();
+    if (total === 0) return 0;
+    const currentDeliveryFee = deliveryFee || settings.deliveryFee || 0;
     const taxAmount = (total * settings.taxRate) / 100;
     const discountAmount = (total * discount) / 100;
-    return total + deliveryCharge + taxAmount - discountAmount;
+    return total + currentDeliveryFee + taxAmount - discountAmount;
   };
 
   const fetchFoodList = async () => {
@@ -158,6 +167,7 @@ const StoreContextProvider = (props) => {
     discount,
     setDiscount,
     getFinalAmount,
+    getCartTotal,
     couponCode,
     setCouponCode,
     showLogin,

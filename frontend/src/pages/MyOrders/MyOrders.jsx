@@ -12,7 +12,7 @@ import EmptyState from '../../components/EmptyState/EmptyState';
 
 const MyOrders = () => {
 
-    const { url, token, addToCart } = useContext(StoreContext);
+    const { url, token, addToCart, setCartItems } = useContext(StoreContext);
     const [data, setData] = useState([]);
     const [showRatePopup, setShowRatePopup] = useState(false);
     const [selectedOrderItems, setSelectedOrderItems] = useState([]);
@@ -57,14 +57,15 @@ const MyOrders = () => {
             navigate('/');
             window.scrollTo(0, 0);
         } else {
-            // Delivered: Add old items to cart
+            // Clear cart first, then add old items
+            setCartItems({});
             for (const item of order.items) {
                 for (let i = 0; i < item.quantity; i++) {
                     await addToCart(item._id);
                 }
             }
-            toast.success("Items added to cart!");
-            navigate('/cart'); // Optional: redirect to cart for convenience
+            toast.success("Cart cleared and items added!");
+            navigate('/cart');
         }
     }
 

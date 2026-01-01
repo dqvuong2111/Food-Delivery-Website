@@ -17,6 +17,8 @@ const Verify = () => {
       orderId,
     });
     if (response.data.success) {
+      // Clear saved checkout form data
+      localStorage.removeItem('checkoutFormData');
       toast.success("Order Placed Successfully");
       navigate("/myorders");
     } else {
