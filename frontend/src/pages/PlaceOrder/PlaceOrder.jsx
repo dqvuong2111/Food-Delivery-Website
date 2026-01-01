@@ -77,8 +77,7 @@ const PlaceOrder = () => {
     lastName: "",
     email: "",
     street: "",
-    city: "Hanoi", // Default city
-    zipcode: "",
+    city: "Hà Nội", // Fixed to Hanoi
     country: "Vietnam",
     phone: "",
   });
@@ -98,10 +97,9 @@ const PlaceOrder = () => {
         const address = response.data.address;
         setData(prev => ({
           ...prev,
-          street: address.road || address.suburb || "",
-          city: address.city || address.state || "Hanoi", // Map 'state' from OSM to 'city' field if needed, but UI has no state input
-          country: "Vietnam", // Force Vietnam
-          zipcode: address.postcode || ""
+          street: address.road || address.suburb || address.neighbourhood || "",
+          city: "Hà Nội", // Always Hanoi
+          country: "Vietnam"
         }));
         setIsMapInteracted(true);
       }
@@ -248,7 +246,7 @@ const PlaceOrder = () => {
             <input required name="lastName" onChange={onChangeHandler} value={data.lastName} type="text" placeholder="Last Name" />
           </div>
           <input required name="email" onChange={onChangeHandler} value={data.email} type="email" placeholder="Email Address" />
-          <input required name="phone" onChange={onChangeHandler} value={data.phone} type="text" placeholder="Phone Number" />
+          <input required name="phone" onChange={onChangeHandler} value={data.phone} type="tel" placeholder="Số điện thoại (VD: 0912345678)" pattern="^(0|\+84)[0-9]{9,10}$" title="Số điện thoại Việt Nam hợp lệ (VD: 0912345678 hoặc +84912345678)" />
         </div>
 
         {/* Address Information Section */}
@@ -305,17 +303,14 @@ const PlaceOrder = () => {
             </MapContainer>
           </div>
 
-          {/* Manual Address Fields (Can be auto-filled later) */}
+          {/* Manual Address Fields */}
           <div className="address-details">
-            <input required name="street" onChange={onChangeHandler} value={data.street} type="text" placeholder="Street Address" />
+            <input required name="street" onChange={onChangeHandler} value={data.street} type="text" placeholder="Địa chỉ đường (VD: 123 Nguyễn Trãi, Thanh Xuân)" />
             <div className="multi-fields">
-              <input required name="city" onChange={onChangeHandler} value={data.city} type="text" placeholder="City" />
-              <input required name="country" value={data.country} type="text" placeholder="Country" readOnly />
+              <input name="city" value={data.city} type="text" placeholder="Thành phố" readOnly className="readonly-field" />
+              <input name="country" value={data.country} type="text" placeholder="Quốc gia" readOnly className="readonly-field" />
             </div>
-            {/* Phone moved here for better layout, or kept above? Keeping zip for now but could hide if needed */}
-            <div className="multi-fields">
-              <input name="zipcode" onChange={onChangeHandler} value={data.zipcode} type="text" placeholder="Zip Code (Optional)" />
-            </div>
+            <p className="delivery-note">📍 Chúng tôi chỉ giao hàng trong nội thành Hà Nội</p>
           </div>
         </div>
 

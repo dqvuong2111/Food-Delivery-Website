@@ -1,6 +1,7 @@
 .dashboard {
     width: 100%;
-    padding: 20px 40px; /* Reduced top/bottom padding */
+    padding: 20px 40px;
+    /* Reduced top/bottom padding */
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -9,7 +10,8 @@
     font-size: 28px;
     font-weight: 700;
     color: var(--text-primary);
-    text-align: center; /* Center the header */
+    text-align: center;
+    /* Center the header */
 }
 
 .dashboard-content-wrapper {
@@ -21,19 +23,19 @@
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
 }
 
 .stat-card {
     background: var(--bg-surface);
-    padding: 30px;
-    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
     border: 1px solid var(--border-default);
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px;
     transition: all 0.2s;
     position: relative;
     overflow: hidden;
@@ -44,7 +46,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
+    width: 3px;
     height: 100%;
     background-color: var(--color-primary);
     opacity: 0;
@@ -52,7 +54,7 @@
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-md);
 }
 
@@ -62,16 +64,16 @@
 
 .stat-card h4 {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     margin: 0;
 }
 
 .stat-card p {
     color: var(--text-primary);
-    font-size: 32px;
+    font-size: 22px;
     font-weight: 700;
     margin: 0;
 }
@@ -91,13 +93,19 @@
     font-weight: 700;
 }
 
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 600px) {
     .dashboard {
-        padding: 20px;
-        margin: 20px auto;
+        padding: 15px;
     }
-    
+
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
 }
