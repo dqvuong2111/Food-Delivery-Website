@@ -57,14 +57,31 @@ const MyOrders = () => {
             navigate('/');
             window.scrollTo(0, 0);
         } else {
-            // Clear cart first, then add old items
-            setCartItems({});
+            // Clear cart first (both local and server)
+            try {
+                // Clear cart on server
+                await axios.post(url + "/api/cart/clear", {}, { headers: { token } });
+            } catch (e) {
+                console.log("Cart clear failed, continuing...");
+            }
+
+            // Build cart from order items (use item._id which is the food ID)
+            const newCart = {};
             for (const item of order.items) {
+                // The item._id stored in order is the food's _id
+                const foodId = item._id;
+                newCart[foodId] = item.quantity;
+
+                // Also sync each item to server
                 for (let i = 0; i < item.quantity; i++) {
-                    await addToCart(item._id);
+                    await addToCart(foodId);
                 }
             }
-            toast.success("Cart cleared and items added!");
+
+            // Set local cart state directly for immediate UI update
+            setCartItems(newCart);
+
+            toast.success("Order items added to cart!");
             navigate('/cart');
         }
     }
