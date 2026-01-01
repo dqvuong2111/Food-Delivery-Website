@@ -5,7 +5,8 @@
 }
 
 .list p:first-of-type {
-    font-size: 28px; /* Increased */
+    font-size: 28px;
+    /* Increased */
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 30px;
@@ -23,12 +24,13 @@
 }
 
 /* Grid Layout */
-.list-table-header, .list-table-row {
+.list-table-header,
+.list-table-row {
     display: grid;
-    grid-template-columns: 100px 2.5fr 1fr 1fr 1fr 0.5fr;
+    grid-template-columns: 60px 2.5fr 1fr 1fr 1fr 0.5fr;
     align-items: center;
-    gap: 15px;
-    padding: 15px 25px;
+    gap: 10px;
+    padding: 10px 20px;
 }
 
 /* Header Text Alignment and size */
@@ -38,8 +40,8 @@
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
-    font-size: 16px; /* Increased from 14px */
-    letter-spacing: 1px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
 }
 
 .list-table-header b {
@@ -55,7 +57,7 @@
     border-bottom: 1px solid var(--border-default);
     transition: background-color 0.2s;
     text-align: center;
-    font-size: 15px; /* Increased from 13px */
+    font-size: 13px;
     color: var(--text-primary);
 }
 
@@ -69,18 +71,19 @@
 
 .list-table-row p:nth-child(2) {
     text-align: center;
-    font-size: 15px; /* Increased from 13px */
+    font-size: 15px;
+    /* Increased from 13px */
     font-weight: 500;
 }
 
 /* Ensure images are centered in their column */
 .list-table-row img {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid #eee;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     margin: 0 auto;
 }
 
@@ -96,7 +99,7 @@
     width: fit-content;
     user-select: none;
     transition: all 0.2s;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .stock-toggle.available {
@@ -113,7 +116,7 @@
 
 .stock-toggle:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .stock-toggle:active {
@@ -131,7 +134,8 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    margin: 0 auto; /* Added to center in grid cell */
+    margin: 0 auto;
+    /* Added to center in grid cell */
 }
 
 .cursor:hover {
@@ -209,7 +213,8 @@
     gap: 8px;
     cursor: pointer;
     padding: 6px 12px;
-    border-radius: 8px; /* More standard button radius */
+    border-radius: 8px;
+    /* More standard button radius */
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid transparent;
     position: relative;
@@ -218,7 +223,8 @@
 }
 
 .price-display:hover {
-    background-color: #fff7ed; /* Very light orange/primary background */
+    background-color: #fff7ed;
+    /* Very light orange/primary background */
     border-color: #ffedd5;
 }
 
@@ -230,12 +236,15 @@
 }
 
 .price-display:hover p {
-    color: var(--primary); /* Change text color on hover */
+    color: var(--primary);
+    /* Change text color on hover */
 }
 
 .edit-icon {
-    color: #9ca3af; /* Gray-400 */
-    opacity: 0; /* Hidden by default or very subtle */
+    color: #9ca3af;
+    /* Gray-400 */
+    opacity: 0;
+    /* Hidden by default or very subtle */
     transform: translateX(-5px);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -243,16 +252,19 @@
 .price-display:hover .edit-icon {
     opacity: 1;
     transform: translateX(0);
-    color: var(--primary); /* Brand color */
+    color: var(--primary);
+    /* Brand color */
 }
 
 /* Responsive */
 @media (max-width: 800px) {
-    .list-table-header, .list-table-row {
+
+    .list-table-header,
+    .list-table-row {
         grid-template-columns: 1fr 3fr 1fr;
         gap: 12px;
     }
-    
+
     .list-table-header b:nth-child(3),
     .list-table-header b:nth-child(4),
     .list-table-header b:nth-child(5),
@@ -266,10 +278,11 @@
 /* Hide Spin Buttons (Arrows) for Number Input */
 .edit-price-input::-webkit-outer-spin-button,
 .edit-price-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .edit-price-input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
 }

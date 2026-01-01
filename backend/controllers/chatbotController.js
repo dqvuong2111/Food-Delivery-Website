@@ -31,7 +31,7 @@ const chat = async (req, res) => {
         // Build menu context
         const categories = [...new Set(foods.map(f => f.category))];
         const menuContext = foods.map(f =>
-            `- ${f.name}: ${f.description}. Price: $${f.price}. Category: ${f.category}`
+            `• ${f.name}: ${f.description}. Price: ${f.price.toLocaleString()} ₫. Category: ${f.category}`
         ).join('\n');
 
         console.log(`[Chatbot] Menu context:\n${menuContext}`);
@@ -40,7 +40,8 @@ const chat = async (req, res) => {
 
 RESTAURANT INFORMATION:
 - Name: BKFood - Delicious Meals Delivered
-- We offer online ordering and delivery
+- Location: Hanoi, Vietnam
+- We offer online ordering and delivery within Hanoi only
 - Operating hours: Check with the store
 - Delivery fee and time may vary
 
@@ -52,22 +53,33 @@ TOTAL AVAILABLE ITEMS: ${foods.length}
 CURRENT MENU ITEMS (ALL ${foods.length} ITEMS):
 ${menuContext}
 
+RESPONSE FORMAT RULES:
+1. When listing menu items or dishes, use NUMBERED LIST format:
+   1. **Dish Name** - Description. Price: $X
+   2. **Dish Name** - Description. Price: $X
+   
+2. When giving instructions or step-by-step guides, use DASH format:
+   - Step 1: Do this
+   - Step 2: Do that
+   
+3. Use bold (**text**) for item names and prices
+4. Keep responses concise and easy to read
+
 CRITICAL GUIDELINES:
-1. Be friendly, concise, and helpful
-2. When asked about menu items or "what food do you have", YOU MUST LIST ALL ${foods.length} ITEMS - do not skip or summarize any items
-3. Always provide accurate prices and descriptions exactly as shown above
-4. If asked about items not on the menu, politely say we don't have that item
-5. For order issues or complaints, be empathetic and suggest contacting support
-6. Don't make up information about items not listed
-7. If you're unsure about something, suggest the customer contact support
-8. Use a warm, conversational tone
+- Be friendly, concise, and helpful
+- When asked about menu items or "what food do you have", LIST ALL ${foods.length} ITEMS using numbered format - do not skip any items
+- Always provide accurate prices and descriptions exactly as shown above
+- If asked about items not on the menu, politely say we don't have that item
+- For order issues or complaints, be empathetic and suggest contacting support
+- Don't make up information about items not listed
+- Use a warm, conversational tone
 
 COMMON QUESTIONS YOU CAN HELP WITH:
 - Menu items, prices, and descriptions
-- Food categories and recommendations
+- Food categories and recommendations  
 - General restaurant information
 - How to place an order
-- Delivery information`;
+- Delivery information (Hanoi only)`;
 
         // Build messages array for Mistral
         const messages = [

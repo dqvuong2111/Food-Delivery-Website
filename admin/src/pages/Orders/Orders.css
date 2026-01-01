@@ -15,8 +15,8 @@
 /* Grid Layout */
 .order-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
     width: 100%;
 }
 
@@ -24,7 +24,7 @@
 .order-card {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -34,7 +34,7 @@
 }
 
 .order-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-md);
     border-color: #cbd5e1;
 }
@@ -42,16 +42,16 @@
 /* Card Header */
 .order-card-header {
     background-color: #f8fafc;
-    padding: 15px 20px;
+    padding: 10px 14px;
     border-bottom: 1px solid var(--border-default);
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
 .parcel-icon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     background-color: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 50%;
@@ -60,13 +60,18 @@
     justify-content: center;
 }
 
+.parcel-icon img {
+    width: 18px;
+    height: 18px;
+}
+
 .order-id {
     display: flex;
     flex-direction: column;
 }
 
 .order-id .label {
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
     color: var(--text-secondary);
     font-weight: 600;
@@ -74,7 +79,7 @@
 }
 
 .order-id .value {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-primary);
     font-family: 'Monaco', 'Consolas', monospace;
@@ -82,11 +87,11 @@
 
 /* Card Body */
 .order-card-body {
-    padding: 20px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    flex: 1; /* Pushes footer down */
+    gap: 12px;
+    flex: 1;
 }
 
 .order-section {
@@ -96,12 +101,12 @@
 }
 
 .section-title {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--color-primary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .food-list {
@@ -118,7 +123,7 @@
 
 .customer-name {
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
     color: #1e293b;
 }
 
@@ -137,12 +142,12 @@
 
 /* Card Footer */
 .order-card-footer {
-    padding: 15px 20px;
+    padding: 12px 14px;
     border-top: 1px solid var(--border-default);
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
 .order-summary {
@@ -209,17 +214,47 @@
 }
 
 /* Status Colors */
-.status-select.pending { background-color: #fff7ed; color: #c2410c; border-color: #ffedd5; }
-.status-select.confirmed { background-color: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
-.status-select.food-processing { background-color: #f0fdf4; color: #15803d; border-color: #dcfce7; }
-.status-select.out-for-delivery { background-color: #faf5ff; color: #7e22ce; border-color: #f3e8ff; }
-.status-select.delivered { background-color: #ecfdf5; color: #047857; border-color: #a7f3d0; }
-.status-select.cancelled { background-color: #fef2f2; color: #ef4444; border-color: #fecaca; }
+.status-select.pending {
+    background-color: #fff7ed;
+    color: #c2410c;
+    border-color: #ffedd5;
+}
+
+.status-select.confirmed {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border-color: #dbeafe;
+}
+
+.status-select.food-processing {
+    background-color: #f0fdf4;
+    color: #15803d;
+    border-color: #dcfce7;
+}
+
+.status-select.out-for-delivery {
+    background-color: #faf5ff;
+    color: #7e22ce;
+    border-color: #f3e8ff;
+}
+
+.status-select.delivered {
+    background-color: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+
+.status-select.cancelled {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border-color: #fecaca;
+}
 
 @media (max-width: 480px) {
     .order {
         padding: 20px;
     }
+
     .order-grid {
         grid-template-columns: 1fr;
     }

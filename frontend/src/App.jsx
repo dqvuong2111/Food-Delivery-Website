@@ -20,6 +20,7 @@ import Wishlist from './pages/Wishlist/Wishlist'
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
 import ResetPassword from './pages/ResetPassword/ResetPassword'
 import ChatWidget from './components/ChatWidget/ChatWidget'
+import FloatingDecorations from './components/FloatingDecorations/FloatingDecorations'
 
 const App = () => {
 
@@ -38,6 +39,7 @@ const App = () => {
     <>
       <ScrollToTop />
       {showLogin ? <LoginPopup /> : <></>}
+      <FloatingDecorations />
       <div className='app'>
         <Navbar />
         <Routes>
