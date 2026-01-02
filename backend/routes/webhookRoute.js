@@ -3,7 +3,7 @@ import { handleWebhook } from "../controllers/webhookController.js";
 
 const webhookRouter = express.Router();
 
-// Webhook endpoint (Public, but should verify signature in production)
-webhookRouter.post("/lalamove", handleWebhook);
+// Webhook endpoint for Driver API status updates
+webhookRouter.post("/driver", handleWebhook);
 
 export default webhookRouter;

@@ -1,0 +1,15 @@
+{
+    "name": "mock-driver-api",
+    "version": "1.0.0",
+    "description": "Mock Driver API mimicking Lalamove for testing",
+    "main": "mockDriverServer.js",
+    "type": "module",
+    "scripts": {
+        "start": "node mockDriverServer.js",
+        "dev": "node mockDriverServer.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.18.2"
+    }
+}

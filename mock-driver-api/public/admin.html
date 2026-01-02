@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Driver API - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: #1e293b;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: #6366f1;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .orders-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .order-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-id {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #6366f1;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-ASSIGNING_DRIVER { background: #fef3c7; color: #92400e; }
+        .status-ON_GOING { background: #dbeafe; color: #1e40af; }
+        .status-PICKED_UP { background: #e9d5ff; color: #7e22ce; }
+        .status-COMPLETED { background: #dcfce7; color: #166534; }
+        .status-CANCELED { background: #fee2e2; color: #991b1b; }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-group h4 {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-group p {
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .btn-sm {
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        .btn-status {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .btn-status:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        .btn-status.active {
+            background: #6366f1;
+            color: #fff;
+            border-color: #6366f1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+            background: #fff;
+            border-radius: 16px;
+            border: 1px dashed #e2e8f0;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #64748b;
+        }
+
+        .driver-info {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-top: 10px;
+        }
+
+        .driver-info h4 {
+            color: #166534;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .driver-info p {
+            color: #15803d;
+            font-size: 0.85rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #22c55e;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #ef4444;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.6rem;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 Mock Driver API</h1>
+            <p>Control and simulate delivery statuses for testing</p>
+        </header>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="refreshOrders()">🔄 Refresh Orders</button>
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+        </div>
+
+        <div id="orders-container" class="orders-grid">
+            <div class="empty-state">
+                <h3>No orders yet</h3>
+                <p>Place an order from your frontend to see it here</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_BASE = '';
+
+        async function refreshOrders() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/orders`);
+                const data = await response.json();
+                renderOrders(data.orders);
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                showToast('Error fetching orders', 'error');
+            }
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('orders-container');
+            
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No orders yet</h3>
+                        <p>Place an order from your frontend to see it here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="order-card" data-order-id="${order.orderId}">
+                    <div class="order-header">
+                        <span class="order-id">📦 ${order.orderId.slice(-12)}</span>
+                        <span class="status-badge status-${order.status}">${formatStatus(order.status)}</span>
+                    </div>
+                    
+                    <div class="order-details">
+                        <div class="detail-group">
+                            <h4>Quotation ID</h4>
+                            <p>${order.quotationId?.slice(-12) || 'N/A'}</p>
+                        </div>
+                        <div class="detail-group">
+                            <h4>Created At</h4>
+                            <p>${new Date(order.createdAt).toLocaleString()}</p>
+                        </div>
+                        <div class="detail-group">
+                            <h4>Sender</h4>
+                            <p>${order.sender?.name || 'N/A'}</p>
+                        </div>
+                        <div class="detail-group">
+                            <h4>Recipient</h4>
+                            <p>${order.recipients?.[0]?.name || 'N/A'}</p>
+                        </div>
+                    </div>
+
+                    ${order.driver ? `
+                        <div class="driver-info">
+                            <h4>🏍️ Driver Assigned</h4>
+                            <p>${order.driver.name} | ${order.driver.phone} | ${order.driver.plateNumber}</p>
+                        </div>
+                    ` : ''}
+
+                    <div class="order-actions">
+                        <button class="btn btn-sm btn-status ${order.status === 'ASSIGNING_DRIVER' ? 'active' : ''}" 
+                                onclick="updateStatus('${order.orderId}', 'ASSIGNING_DRIVER')">
+                            🔍 Assigning
+                        </button>
+                        <button class="btn btn-sm btn-status ${order.status === 'ON_GOING' ? 'active' : ''}" 
+                                onclick="updateStatus('${order.orderId}', 'ON_GOING')">
+                            🚗 On Going
+                        </button>
+                        <button class="btn btn-sm btn-status ${order.status === 'PICKED_UP' ? 'active' : ''}" 
+                                onclick="updateStatus('${order.orderId}', 'PICKED_UP')">
+                            📦 Picked Up
+                        </button>
+                        <button class="btn btn-sm btn-status ${order.status === 'COMPLETED' ? 'active' : ''}" 
+                                onclick="updateStatus('${order.orderId}', 'COMPLETED')">
+                            ✅ Completed
+                        </button>
+                        <button class="btn btn-sm btn-status ${order.status === 'CANCELED' ? 'active' : ''}" 
+                                onclick="updateStatus('${order.orderId}', 'CANCELED')">
+                            ❌ Canceled
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatStatus(status) {
+            const statusMap = {
+                'ASSIGNING_DRIVER': 'Assigning Driver',
+                'ON_GOING': 'On Going',
+                'PICKED_UP': 'Picked Up',
+                'COMPLETED': 'Completed',
+                'CANCELED': 'Canceled'
+            };
+            return statusMap[status] || status;
+        }
+
+        async function updateStatus(orderId, status) {
+            let cancellationReason = null;
+            
+            // Prompt for cancellation reason if status is CANCELED
+            if (status === 'CANCELED') {
+                cancellationReason = prompt('Enter cancellation reason:', 'Driver unavailable');
+                if (cancellationReason === null) return; // User clicked cancel
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, cancellationReason })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`Status updated to ${formatStatus(status)}`);
+                    refreshOrders();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+                showToast('Error updating status', 'error');
+            }
+        }
+
+        async function clearAllData() {
+            if (!confirm('Are you sure you want to clear all mock data?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/clear`, { method: 'DELETE' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('All data cleared');
+                    refreshOrders();
+                }
+            } catch (error) {
+                console.error('Error clearing data:', error);
+                showToast('Error clearing data', 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (type === 'error' ? ' error' : '');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initial load
+        refreshOrders();
+
+        // Auto-refresh every 5 seconds
+        setInterval(refreshOrders, 5000);
+    </script>
+</body>
+</html>

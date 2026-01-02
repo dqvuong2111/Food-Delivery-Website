@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import "./Orders.css";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Package, Truck } from "lucide-react"; // Added Truck icon
+import { Package, Truck, MapPin, Phone, User, ChevronRight, CheckCircle, XCircle } from "lucide-react";
 
 const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
-  const [loadingDelivery, setLoadingDelivery] = useState(false); // Loading state for delivery request
+  const [loadingDelivery, setLoadingDelivery] = useState({});
 
   const fetchAllOrder = async () => {
     try {
@@ -27,131 +27,164 @@ const Orders = ({ url }) => {
     }
   };
 
-  const statusHandler = async (event, orderId) => {
-    const newStatus = event.target.value;
-    let reason = "";
+  // Define the order status flow
+  const statusFlow = ["Pending", "Confirmed", "Food Processing"];
 
-    if (newStatus === "Cancelled") {
-      reason = prompt("Please enter a reason for cancellation:", "Out of stock");
-      if (reason === null) return;
+  // Get next status in the flow
+  const getNextStatus = (currentStatus) => {
+    const currentIndex = statusFlow.indexOf(currentStatus);
+    if (currentIndex !== -1 && currentIndex < statusFlow.length - 1) {
+      return statusFlow[currentIndex + 1];
     }
+    return null;
+  };
 
-    const token = localStorage.getItem("token");
-    const response = await axios.post(url + "/api/order/status", {
-      orderId,
-      status: newStatus,
-      cancellationReason: reason
-    }, { headers: { token } });
-    if (response.data.success) {
-      await fetchAllOrder();
-      toast.success("Order status updated");
+  // Check if order can be advanced to next status
+  const canAdvanceStatus = (order) => {
+    if (order.deliveryId) return false; // Driver already called
+    if (order.status === "Delivered" || order.status === "Cancelled") return false;
+    return getNextStatus(order.status) !== null;
+  };
+
+  // Check if order is ready to call driver
+  const canCallDriver = (order) => {
+    return order.status === "Food Processing" && !order.deliveryId;
+  };
+
+  // Advance to next status
+  const advanceStatus = async (orderId, nextStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(url + "/api/order/status", {
+        orderId,
+        status: nextStatus
+      }, { headers: { token } });
+
+      if (response.data.success) {
+        toast.success(`Order updated to ${nextStatus}`);
+        await fetchAllOrder();
+      }
+    } catch (error) {
+      toast.error("Failed to update status");
     }
   };
 
-  // --- LALAMOVE INTEGRATION ---
-  const handleLalamoveRequest = async (order) => {
-    if (!window.confirm("Bạn có chắc muốn gọi tài xế Lalamove cho đơn hàng này?")) return;
+  // Cancel order
+  const cancelOrder = async (orderId) => {
+    const reason = prompt("Please enter a reason for cancellation:", "Out of stock");
+    if (reason === null) return;
 
-    setLoadingDelivery(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(url + "/api/order/status", {
+        orderId,
+        status: "Cancelled",
+        cancellationReason: reason
+      }, { headers: { token } });
+
+      if (response.data.success) {
+        toast.success("Order cancelled");
+        await fetchAllOrder();
+      }
+    } catch (error) {
+      toast.error("Failed to cancel order");
+    }
+  };
+
+  // Call Driver
+  const handleDriverRequest = async (order) => {
+    if (!window.confirm("Call driver for this order?")) return;
+
+    setLoadingDelivery(prev => ({ ...prev, [order._id]: true }));
     const token = localStorage.getItem("token");
 
     try {
-      // 1. Địa chỉ cửa hàng (Hardcode để test - Đổi sang Hà Nội cho gần khách hàng)
-      const pickupAddress = "Vincom Center Ba Trieu, Hai Ba Trung, Hanoi";
+      const pickupAddress = "Số 1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội";
+      const dropoffAddress = `${order.address.street}, ${order.address.city}`;
 
-      // 2. Địa chỉ khách hàng
-      const dropoffAddress = `${order.address.street}, ${order.address.city}, ${order.address.state}, ${order.address.zipcode}`;
+      toast.info("Getting delivery quote...");
 
-      toast.info("Đang lấy báo giá vận chuyển...");
-
-      // Bước 1: Lấy báo giá (Estimate)
       const estimateRes = await axios.post(url + "/api/delivery/estimate", {
         pickup: pickupAddress,
         dropoff: dropoffAddress
       }, { headers: { token } });
 
-      console.log("Lalamove Response:", estimateRes.data); // Xem log này trên Browser Console (F12)
-
       if (!estimateRes.data.success) {
-        throw new Error(estimateRes.data.message || "Không lấy được báo giá");
+        throw new Error(estimateRes.data.message || "Failed to get quote");
       }
 
-      // Backend trả về: { success: true, data: { ...LalamoveData... } }
-      // Lalamove Data có thể nằm trong estimateRes.data.data.data hoặc estimateRes.data.data
       const quoteData = estimateRes.data.data.data || estimateRes.data.data;
 
       if (!quoteData || !quoteData.priceBreakdown) {
-        console.error("Cấu trúc JSON lạ:", quoteData);
-        throw new Error("Dữ liệu báo giá không hợp lệ");
+        throw new Error("Invalid quote data");
       }
 
-      const quotationId = quoteData.quotationId;
-      const shippingFee = quoteData.priceBreakdown.total;
+      const shippingFee = quoteData.priceBreakdown.total || quoteData.priceBreakdown.base;
 
-      // Hỏi lại Admin lần nữa về giá
-      if (!window.confirm(`Phí ship ước tính là: ${shippingFee} VND. Đồng ý đặt xe?`)) {
-        setLoadingDelivery(false);
+      if (!window.confirm(`Delivery fee: ${Number(shippingFee).toLocaleString()} VND. Confirm?`)) {
+        setLoadingDelivery(prev => ({ ...prev, [order._id]: false }));
         return;
       }
 
-      toast.info("Đang tìm tài xế...");
+      toast.info("Finding driver...");
 
-      // Bước 2: Tạo đơn hàng (Place Order)
-      // Gửi toàn bộ quoteData (chứa stops và stopId) sang backend
       const createRes = await axios.post(url + "/api/delivery/create", {
         orderId: order._id,
         quotation: quoteData
       }, { headers: { token } });
 
       if (createRes.data.success) {
-        toast.success("✅ Đã gọi xe thành công! Mã đơn: " + createRes.data.lalamoveOrderId);
+        toast.success("✅ Driver assigned successfully!");
         await fetchAllOrder();
       } else {
-        throw new Error(createRes.data.message || "Lỗi khi tạo đơn giao hàng");
+        throw new Error(createRes.data.message || "Failed to assign driver");
       }
 
     } catch (error) {
       console.error(error);
-      toast.error("Lỗi gọi xe: " + (error.response?.data?.message || error.message));
+      toast.error("Error: " + (error.response?.data?.message || error.message));
     } finally {
-      setLoadingDelivery(false);
+      setLoadingDelivery(prev => ({ ...prev, [order._id]: false }));
     }
   };
 
-  const simulateLalamove = async (orderId, lalamoveStatus) => {
-    // Simulate Webhook/Polling logic
-    // Map Lalamove status to System status
-    let myStatus = "Food Processing";
-    let cancellationReason = "";
-
-    if (lalamoveStatus === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
-    if (lalamoveStatus === "ON_GOING") myStatus = "Out for delivery";
-    if (lalamoveStatus === "COMPLETED") myStatus = "Delivered";
-    if (lalamoveStatus === "CANCELED") {
-      myStatus = "Cancelled";
-      cancellationReason = "Cancelled by Lalamove: Driver not available in your area";
-    }
-
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(url + "/api/order/status", {
-        orderId,
-        status: myStatus,
-        cancellationReason: cancellationReason || undefined
-      }, { headers: { token } });
-
-      toast.info(`🛠 Simulated: ${lalamoveStatus} -> ${myStatus}`);
-      await fetchAllOrder();
-    } catch (error) {
-      toast.error("Simulation failed");
-    }
-  }
-
-  // -----------------------------
-
   useEffect(() => {
     fetchAllOrder();
+    // Poll for updates every 10 seconds
+    const interval = setInterval(fetchAllOrder, 10000);
+    return () => clearInterval(interval);
   }, []);
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'Pending': '#f59e0b',
+      'Confirmed': '#3b82f6',
+      'Food Processing': '#8b5cf6',
+      'Finding Driver': '#06b6d4',
+      'Out for delivery': '#10b981',
+      'Delivered': '#22c55e',
+      'Cancelled': '#ef4444'
+    };
+    return colors[status] || '#6b7280';
+  };
+
+  const getStatusStep = (status, order) => {
+    // If driver cancelled, show at Driver stage
+    if (order?.deliveryId && (status === 'Cancelled' || order?.deliveryStatus === 'CANCELED')) {
+      return 4; // Driver stage
+    }
+
+    const steps = {
+      'Pending': 1,
+      'Confirmed': 2,
+      'Food Processing': 3,
+      'Finding Driver': 4,
+      'Out for delivery': 5,
+      'Delivered': 6,
+      'Cancelled': 0
+    };
+    return steps[status] || 0;
+  };
 
   return (
     <div className="order">
@@ -159,132 +192,127 @@ const Orders = ({ url }) => {
       <div className="order-grid">
         {orders.map((order, index) => (
           <div key={index} className="order-card">
+            {/* Header */}
             <div className="order-card-header">
-              <div className="parcel-icon">
-                <Package size={24} color="#6b7280" />
+              <div className="header-left">
+                <Package size={20} color="#6366f1" />
+                <span className="order-id">#{order._id.slice(-6).toUpperCase()}</span>
               </div>
-              <div className="order-id">
-                <span className="label">Order ID</span>
-                <span className="value">#{order._id.slice(-6).toUpperCase()}</span>
+              <span
+                className="status-badge"
+                style={{ backgroundColor: getStatusColor(order.status) + '20', color: getStatusColor(order.status) }}
+              >
+                {order.status}
+              </span>
+            </div>
+
+            {/* Progress Steps */}
+            <div className="status-progress">
+              {["Pending", "Confirmed", "Processing", "Driver"].map((step, i) => (
+                <div key={i} className={`progress-step ${getStatusStep(order.status, order) > i ? 'completed' : ''} ${getStatusStep(order.status, order) === i + 1 ? 'current' : ''}`}>
+                  <div className="step-dot"></div>
+                  <span>{step}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Order Items */}
+            <div className="order-items">
+              {order.items.map((item, idx) => (
+                <div key={idx} className="item-row">
+                  <span className="item-name">{item.name}</span>
+                  <span className="item-qty">×{item.quantity}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Customer Info */}
+            <div className="customer-info">
+              <div className="info-row">
+                <User size={14} />
+                <span>{order.address.firstName} {order.address.lastName}</span>
+              </div>
+              <div className="info-row">
+                <MapPin size={14} />
+                <span>{order.address.street}, {order.address.city}</span>
+              </div>
+              <div className="info-row">
+                <Phone size={14} />
+                <span>{order.address.phone}</span>
               </div>
             </div>
 
-            <div className="order-card-body">
-              <div className="order-section">
-                <p className="section-title">Items</p>
-                <div className="food-list">
-                  {order.items.map((item, idx) => (
-                    <span key={idx}>
-                      {item.name} <span className="qty">x{item.quantity}</span>
-                      {idx !== order.items.length - 1 && ", "}
-                    </span>
-                  ))}
-                </div>
+            {/* Delivery Info */}
+            {order.deliveryId && (
+              <div className={`delivery-badge ${order.deliveryStatus === 'CANCELED' ? 'cancelled' : ''}`}>
+                <Truck size={14} />
+                <span>Driver: {order.deliveryId.slice(-8)}</span>
+                <span className={`delivery-status ${order.deliveryStatus === 'CANCELED' ? 'status-cancelled' : ''}`}>
+                  {order.deliveryStatus}
+                </span>
               </div>
+            )}
 
-              <div className="order-section">
-                <p className="section-title">Delivery To</p>
-                <p className="customer-name">
-                  {order.address.firstName + " " + order.address.lastName}
-                </p>
-                <p className="customer-address">
-                  {order.address.street}, {order.address.city}, {order.address.state}, {order.address.zipcode}
-                </p>
-                <p className="customer-phone">{order.address.phone}</p>
-              </div>
+            {/* Order Total */}
+            <div className="order-total">
+              <span>Total</span>
+              <span className="price">{order.amount.toLocaleString()} ₫</span>
             </div>
 
-            <div className="order-card-footer">
-              <div className="order-summary">
-                <div className="summary-item">
-                  <span>Items</span>
-                  <b>{order.items.length}</b>
+            {/* Action Buttons */}
+            <div className="order-actions">
+              {order.status === "Cancelled" && (
+                <div className="cancelled-notice">
+                  <XCircle size={16} />
+                  Order Cancelled
                 </div>
-                <div className="summary-item">
-                  <span>Total</span>
-                  <b className="price">{order.amount.toLocaleString()} ₫</b>
+              )}
+
+              {order.status === "Delivered" && (
+                <div className="delivered-notice">
+                  <CheckCircle size={16} />
+                  Order Completed
                 </div>
-              </div>
+              )}
 
-              <div className="order-controls">
-                {/* Hiển thị thông tin vận chuyển nếu đã gọi xe */}
-                {order.deliveryId && (
-                  <div className="delivery-info" style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
-                    <p>🚚 Lalamove ID: <b>{order.deliveryId}</b></p>
-                    <p>Status: {order.deliveryStatus || "Processing"}</p>
-                  </div>
-                )}
+              {/* Next Step Button */}
+              {canAdvanceStatus(order) && (
+                <button
+                  className="btn-next-step"
+                  onClick={() => advanceStatus(order._id, getNextStatus(order.status))}
+                >
+                  <span>Move to {getNextStatus(order.status)}</span>
+                  <ChevronRight size={18} />
+                </button>
+              )}
 
-                <div className="order-status-control">
-                  <select
-                    onChange={(event) => statusHandler(event, order._id)}
-                    value={order.status}
-                    className={`status-select ${order.status.toLowerCase().replace(/\s/g, '-')}`}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Food Processing">Food Processing</option>
-                    <option value="Finding Driver">Finding Driver</option>
-                    <option value="Out for delivery">Out for Delivery</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </div>
+              {/* Call Driver Button */}
+              {canCallDriver(order) && (
+                <button
+                  className="btn-driver"
+                  onClick={() => handleDriverRequest(order)}
+                  disabled={loadingDelivery[order._id]}
+                >
+                  <Truck size={16} />
+                  {loadingDelivery[order._id] ? "Processing..." : "Call Driver"}
+                </button>
+              )}
 
-                {/* Nút gọi Lalamove chỉ hiện khi đơn chưa hoàn thành VÀ chưa gọi xe */}
-                {order.status !== 'Delivered' && order.status !== 'Cancelled' && !order.deliveryId && (
-                  <button
-                    className="btn-lalamove"
-                    onClick={() => handleLalamoveRequest(order)}
-                    disabled={loadingDelivery}
-                    style={{
-                      marginTop: '10px',
-                      padding: '8px 12px',
-                      backgroundColor: '#ff6600', /* Lalamove Orange */
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      width: '100%',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Truck size={16} />
-                    {loadingDelivery ? "Đang xử lý..." : "Gọi Lalamove"}
-                  </button>
-                )}
-
-                {/* --- DEV TOOLS: SIMULATE LALAMOVE STATUS --- */}
-                {order.deliveryId && (
-                  <div className="dev-tools" style={{ marginTop: '10px', borderTop: '1px dashed #ccc', paddingTop: '5px' }}>
-                    <p style={{ fontSize: '10px', color: '#888', marginBottom: '4px' }}>🛠 TEST LALAMOVE STATUS:</p>
-                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                      <button onClick={() => simulateLalamove(order._id, 'ASSIGNING_DRIVER')} style={devBtnStyle}>Assigning</button>
-                      <button onClick={() => simulateLalamove(order._id, 'ON_GOING')} style={devBtnStyle}>On Going</button>
-                      <button onClick={() => simulateLalamove(order._id, 'COMPLETED')} style={{ ...devBtnStyle, backgroundColor: '#d1fae5', color: '#065f46' }}>Done</button>
-                      <button onClick={() => simulateLalamove(order._id, 'CANCELED')} style={{ ...devBtnStyle, backgroundColor: '#fee2e2', color: '#991b1b' }}>Cancel</button>
-                    </div>
-                  </div>
-                )}
-              </div>
+              {/* Cancel Button (only before driver is called) */}
+              {!order.deliveryId && order.status !== "Cancelled" && order.status !== "Delivered" && (
+                <button
+                  className="btn-cancel"
+                  onClick={() => cancelOrder(order._id)}
+                >
+                  Cancel Order
+                </button>
+              )}
             </div>
           </div>
         ))}
       </div>
     </div>
   );
-};
-
-const devBtnStyle = {
-  padding: '4px 6px',
-  fontSize: '10px',
-  border: '1px solid #ddd',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  backgroundColor: '#f3f4f6'
 };
 
 export default Orders;

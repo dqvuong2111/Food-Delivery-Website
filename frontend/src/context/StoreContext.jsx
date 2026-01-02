@@ -8,13 +8,14 @@ const StoreContextProvider = (props) => {
   const url = "http://localhost:4000";
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
+  const [category_list, setCategoryList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [discount, setDiscount] = useState(0); // Percentage
   const [couponCode, setCouponCode] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [wishlist, setWishlist] = useState({});
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(100);
+  const [maxPrice, setMaxPrice] = useState(1000000);
   const [minRating, setMinRating] = useState(0);
   const [settings, setSettings] = useState({
     deliveryFee: 2, // Fallback default
@@ -130,6 +131,17 @@ const StoreContextProvider = (props) => {
     setFoodList(response.data.data);
   };
 
+  const fetchCategoryList = async () => {
+    try {
+      const response = await axios.get(url + "/api/category/list");
+      if (response.data.success) {
+        setCategoryList(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   const loadCartData = async (token) => {
     const respone = await axios.post(
       url + "/api/cart/get",
@@ -142,6 +154,7 @@ const StoreContextProvider = (props) => {
   useEffect(() => {
     async function loadData() {
       await fetchFoodList();
+      await fetchCategoryList();
       await fetchSettings();
       if (localStorage.getItem("token")) {
         setToken(localStorage.getItem("token"));
@@ -154,6 +167,7 @@ const StoreContextProvider = (props) => {
 
   const contextValue = {
     food_list,
+    category_list,
     cartItems,
     setCartItems,
     addToCart,

@@ -1,81 +1,100 @@
-import { getDeliveryQuote, placeDeliveryOrder, trackOrder } from '../services/lalamoveService.js';
+import axios from 'axios';
 import { getCoordinates } from '../services/googleMapsService.js';
 import orderModel from '../models/orderModel.js';
 
-// Helper: Chuẩn hóa số điện thoại sang E.164 (VN)
+// Mock Driver API URL (configurable via env)
+const DRIVER_API_URL = process.env.DRIVER_API_URL || 'http://localhost:5001';
+
+// Helper: Format phone number to E.164 (VN)
 const formatPhone = (phone) => {
-    if (!phone) return "+84900000000"; // Fallback nếu không có số (tránh lỗi crash)
-
-    // Xóa tất cả ký tự không phải số (trừ dấu +)
+    if (!phone) return "+84900000000";
     let cleanPhone = phone.replace(/[^\d+]/g, '');
-
-    // Nếu bắt đầu bằng 0, đổi thành +84
     if (cleanPhone.startsWith('0')) {
         cleanPhone = '+84' + cleanPhone.substring(1);
     }
-
-    // Nếu chưa có dấu +, thêm vào (giả định là +84 nếu thiếu)
     if (!cleanPhone.startsWith('+')) {
         cleanPhone = '+84' + cleanPhone;
     }
-
     return cleanPhone;
 };
 
-// Get Shipping Cost
+// Get Shipping Cost Estimate
 const getEstimate = async (req, res) => {
     const { pickup, dropoff } = req.body;
-    console.log(`[Lalamove Estimate] Request: ${pickup} -> ${dropoff}`);
+    console.log(`[Delivery] Estimate: ${pickup} -> ${dropoff}`);
 
     try {
+        // Get coordinates from addresses
         const pickupLoc = await getCoordinates(pickup);
         const dropoffLoc = await getCoordinates(dropoff);
-        console.log(`[Google Maps] Coords found:`, { pickupLoc, dropoffLoc });
+        console.log(`[Delivery] Coords found:`, { pickupLoc, dropoffLoc });
 
-        const quote = await getDeliveryQuote(pickupLoc, dropoffLoc);
-        console.log(`[Lalamove] Quote success:`, quote.data?.quotationId);
+        // Call Mock Driver API for quotation
+        const response = await axios.post(`${DRIVER_API_URL}/v3/quotations`, {
+            data: {
+                serviceType: "MOTORCYCLE",
+                stops: [
+                    { coordinates: { lat: pickupLoc.lat, lng: pickupLoc.lng }, address: pickupLoc.address },
+                    { coordinates: { lat: dropoffLoc.lat, lng: dropoffLoc.lng }, address: dropoffLoc.address }
+                ],
+                language: "vi_VN"
+            }
+        });
 
-        res.json({ success: true, data: quote, locations: { pickup: pickupLoc, dropoff: dropoffLoc } });
+        console.log(`[Delivery] Quote success:`, response.data.data?.quotationId);
+
+        res.json({
+            success: true,
+            data: response.data,
+            locations: { pickup: pickupLoc, dropoff: dropoffLoc }
+        });
     } catch (error) {
-        console.error("[Estimate Error]", error.message);
+        console.error("[Delivery] Estimate Error:", error.message);
         res.json({ success: false, message: error.message });
     }
 };
 
-// Create Delivery Request (After user pays)
+// Create Delivery Order (After admin approves)
 const createDelivery = async (req, res) => {
     const { orderId, quotation } = req.body;
-    console.log(`[Lalamove Create] Order: ${orderId}, Quote ID: ${quotation?.quotationId}`);
+    console.log(`[Delivery] Create: Order ${orderId}, Quote ID: ${quotation?.quotationId}`);
 
     try {
         const order = await orderModel.findById(orderId);
         if (!order) return res.json({ success: false, message: "Order not found" });
 
-        // Chuẩn hóa số điện thoại
-        const senderPhone = formatPhone("0901234567"); // Số của nhà hàng
+        // Prepare sender and recipient info
+        const senderPhone = formatPhone("0901234567"); // Restaurant phone
         const recipientPhone = formatPhone(order.address.phone);
 
-        console.log(`[Phone Debug] Sender: ${senderPhone}, Recipient: ${recipientPhone}`);
-
         const sender = {
+            stopId: quotation.stops[0].stopId,
             name: "My Restaurant",
             phone: senderPhone
         };
 
         const recipient = {
+            stopId: quotation.stops[1].stopId,
             name: `${order.address.firstName} ${order.address.lastName}`,
             phone: recipientPhone
         };
 
-        const deliveryData = await placeDeliveryOrder(quotation, sender, recipient);
+        // Call Mock Driver API to create order
+        const response = await axios.post(`${DRIVER_API_URL}/v3/orders`, {
+            data: {
+                quotationId: quotation.quotationId,
+                sender: sender,
+                recipients: [recipient],
+                isPODEnabled: true
+            }
+        });
 
-        console.log(`[Lalamove] Order Placed:`, deliveryData);
+        const deliveryData = response.data;
+        console.log(`[Delivery] Order Placed:`, deliveryData);
 
-        // LƯU VÀO DATABASE
-        // deliveryData.data.orderId là ID của đơn Lalamove
-        const lalamoveOrderId = deliveryData.data?.orderId || deliveryData.orderId;
-
-        order.deliveryId = lalamoveOrderId;
+        // Save delivery ID to database
+        const driverOrderId = deliveryData.data?.orderId || deliveryData.orderId;
+        order.deliveryId = driverOrderId;
         order.deliveryStatus = "ASSIGNING_DRIVER";
         order.status = "Finding Driver";
         await order.save();
@@ -84,56 +103,55 @@ const createDelivery = async (req, res) => {
             success: true,
             message: "Delivery Assigned",
             data: deliveryData,
-            lalamoveOrderId: lalamoveOrderId // Send explicitly
+            lalamoveOrderId: driverOrderId // Keep for backward compatibility
         });
 
     } catch (error) {
-        console.error("[Create Delivery Error]", error.message);
-        if (error.response) {
-            console.error(">>> LALAMOVE REASON:", JSON.stringify(error.response.data, null, 2));
-        }
+        console.error("[Delivery] Create Error:", error.message);
         const backendMsg = error.response?.data?.message || error.message;
         res.json({ success: false, message: backendMsg });
     }
 };
 
+// Get Delivery Status
 const getDeliveryStatus = async (req, res) => {
     const { deliveryId, orderId } = req.body;
-    try {
-        // First, get current order status from DB
-        const currentOrder = await orderModel.findById(orderId);
 
-        // If admin manually set to Delivered or Cancelled, don't override from Lalamove
+    try {
+        // Check if order is already finalized
+        const currentOrder = await orderModel.findById(orderId);
         if (currentOrder && (currentOrder.status === 'Delivered' || currentOrder.status === 'Cancelled')) {
             return res.json({
                 success: true,
                 data: { status: currentOrder.status },
-                message: 'Status already finalized by admin'
+                message: 'Status already finalized'
             });
         }
 
-        const lalamoveData = await trackOrder(deliveryId);
-        const lalamoveStatus = lalamoveData.status || lalamoveData.data?.status;
+        // Call Mock Driver API to get status
+        const response = await axios.get(`${DRIVER_API_URL}/v3/orders/${deliveryId}`);
+        const driverData = response.data;
+        const driverStatus = driverData.status || driverData.data?.status;
 
-        if (orderId && lalamoveStatus) {
-            // Map Lalamove status to System status
+        if (orderId && driverStatus) {
+            // Map driver status to system status
             let myStatus = "Food Processing";
-            if (lalamoveStatus === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
-            if (lalamoveStatus === "ON_GOING") myStatus = "Out for delivery";
-            if (lalamoveStatus === "PICKED_UP") myStatus = "Out for delivery";
-            if (lalamoveStatus === "COMPLETED") myStatus = "Delivered";
-            if (lalamoveStatus === "CANCELED" || lalamoveStatus === "EXPIRED") myStatus = "Cancelled";
+            if (driverStatus === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
+            if (driverStatus === "ON_GOING") myStatus = "Out for delivery";
+            if (driverStatus === "PICKED_UP") myStatus = "Out for delivery";
+            if (driverStatus === "COMPLETED") myStatus = "Delivered";
+            if (driverStatus === "CANCELED" || driverStatus === "EXPIRED") myStatus = "Cancelled";
 
             await orderModel.findByIdAndUpdate(orderId, {
-                deliveryStatus: lalamoveStatus,
+                deliveryStatus: driverStatus,
                 status: myStatus
             });
         }
 
-        res.json({ success: true, data: lalamoveData });
+        res.json({ success: true, data: driverData });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }
-}
+};
 
 export { getEstimate, createDelivery, getDeliveryStatus };

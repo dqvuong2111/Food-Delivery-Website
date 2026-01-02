@@ -231,26 +231,28 @@ const PlaceOrder = () => {
     }, 500);
   };
 
-  // Hàm tính phí giao hàng từ API (Giữ nguyên logic cũ)
+  // Fetch delivery fee from API
   const fetchDeliveryFee = async () => {
     if (data.street && data.city) {
       setLoadingFee(true);
       try {
-        const pickupAddress = "Số 1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội"; // Địa chỉ HUST
+        const pickupAddress = "Số 1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội";
         const response = await axios.post(url + "/api/delivery/estimate", {
           pickup: pickupAddress,
           dropoff: `${data.street}, ${data.city}`
         }, { headers: { token } });
 
         if (response.data.success) {
-          const lalamoveData = response.data.data.data;
-          const totalAmount = lalamoveData.priceBreakdown?.total || lalamoveData.totalAmount;
+          const deliveryData = response.data.data.data;
+          const totalAmount = deliveryData.priceBreakdown?.total ||
+            deliveryData.priceBreakdown?.base ||
+            deliveryData.totalAmount;
           const amount = parseFloat(totalAmount);
 
           if (!isNaN(amount)) {
             setDeliveryFee(amount);
           }
-          setQuotationId(lalamoveData.quotationId);
+          setQuotationId(deliveryData.quotationId);
         }
       } catch (error) {
         console.error("Error fetching delivery fee:", error);

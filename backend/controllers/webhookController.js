@@ -1,39 +1,51 @@
 import orderModel from "../models/orderModel.js";
 
-// Handle Lalamove Webhook Events
+// Handle Driver API Webhook Events (from Mock Driver API)
 const handleWebhook = async (req, res) => {
     try {
         const event = req.body;
-        
+
         // Log the event (for debugging)
-        console.log("Webhook Received:", JSON.stringify(event, null, 2));
+        console.log("[Webhook] Received:", JSON.stringify(event, null, 2));
 
-        // Lalamove sends different event types
-        const eventType = event.eventType; // e.g., "ORDER_STATUS_CHANGED"
-        const data = event.data;
-        
+        const eventType = event.eventType;
+
         if (eventType === "ORDER_STATUS_CHANGED") {
-             const { orderId, status } = data;
-             
-             // Map Lalamove status to your system's status
-             let myStatus = "Food Processing";
-             if (status === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
-             if (status === "ON_GOING") myStatus = "Out for delivery";
-             if (status === "COMPLETED") myStatus = "Delivered";
-             if (status === "CANCELED") myStatus = "Cancelled";
+            const { orderId, status, cancellationReason } = event;
 
-             // You need to find YOUR order using Lalamove's Order ID (stored in 'deliveryId' or similar)
-             // This assumes you added a 'deliveryId' field to your orderModel
-             // await orderModel.findOneAndUpdate({ deliveryId: orderId }, { status: myStatus });
-             
-             console.log(`Order ${orderId} updated to ${myStatus}`);
+            // Map driver status to system status
+            let myStatus = "Food Processing";
+            if (status === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
+            if (status === "ON_GOING") myStatus = "Out for delivery";
+            if (status === "PICKED_UP") myStatus = "Out for delivery";
+            if (status === "COMPLETED") myStatus = "Delivered";
+            if (status === "CANCELED") myStatus = "Cancelled";
+
+            // Build update object
+            const updateData = {
+                status: myStatus,
+                deliveryStatus: status
+            };
+
+            // Add cancellation reason if provided (from driver)
+            if (status === "CANCELED" && cancellationReason) {
+                updateData.cancellationReason = `Driver: ${cancellationReason}`;
+            }
+
+            // Update order by deliveryId
+            await orderModel.findOneAndUpdate(
+                { deliveryId: orderId },
+                updateData
+            );
+
+            console.log(`[Webhook] Order ${orderId} updated to ${myStatus}${cancellationReason ? ` (Reason: ${cancellationReason})` : ''}`);
         }
 
         // Always return 200 OK to acknowledge receipt
         res.status(200).send("OK");
 
     } catch (error) {
-        console.error("Webhook Error:", error);
+        console.error("[Webhook] Error:", error);
         res.status(500).send("Internal Server Error");
     }
 };

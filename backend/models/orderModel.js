@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
   cancellationReason: { type: String, default: "" },
   date: { type: Date, default: Date.now },
   payment: { type: Boolean, default: false },
-  // Delivery fields (Lalamove)
+  // Delivery fields (Driver API)
   deliveryId: { type: String, default: "" },
   deliveryStatus: { type: String, default: "" },
   isRead: { type: Boolean, default: false }

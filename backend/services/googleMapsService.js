@@ -20,7 +20,7 @@ export const getCoordinates = async (address) => {
             const result = response.data[0];
             return {
                 lat: result.lat,
-                lng: result.lon, // Nominatim trả về 'lon', Lalamove cần 'lng'
+                lng: result.lon, // Nominatim returns 'lon', Driver API needs 'lng'
                 address: result.display_name
             };
         } else {

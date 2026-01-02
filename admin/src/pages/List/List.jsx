@@ -3,40 +3,40 @@ import './List.css';
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { assets } from "../../assets/assets";
-import { Trash2, Edit2, Check, X } from "lucide-react";
+import { Trash2, Edit2, Check, X, Package, DollarSign, Tag } from "lucide-react";
 
-const List = ({url}) => {
-    const[list,setList]=useState([]);
+const List = ({ url }) => {
+    const [list, setList] = useState([]);
     const [editId, setEditId] = useState(null);
     const [tempPrice, setTempPrice] = useState("");
 
-    const fetchItems=async()=>{
-        const response=await axios.get(`${url}/api/food/list`);
-        if(response.data.success){
+    const fetchItems = async () => {
+        const response = await axios.get(`${url}/api/food/list`);
+        if (response.data.success) {
             setList(response.data.data);
         }
-        else{
+        else {
             toast.error("Error");
         }
     }
 
-    const removeFood=async(foodId)=>{
+    const removeFood = async (foodId) => {
+        if (!window.confirm("Are you sure you want to delete this item?")) return;
         const token = localStorage.getItem("token");
-        const response= await axios.post(`${url}/api/food/remove`,{id:foodId}, {headers: {token}});
-        if(response.data.success){
+        const response = await axios.post(`${url}/api/food/remove`, { id: foodId }, { headers: { token } });
+        if (response.data.success) {
             toast.success(response.data.message);
             await fetchItems();
         }
-        else{
+        else {
             toast.error("Error");
         }
     }
 
     const toggleAvailability = async (id) => {
         const token = localStorage.getItem("token");
-        const response = await axios.post(`${url}/api/food/toggle`, {id}, {headers: {token}});
-        if(response.data.success){
+        const response = await axios.post(`${url}/api/food/toggle`, { id }, { headers: { token } });
+        if (response.data.success) {
             toast.success(response.data.message);
             await fetchItems();
         } else {
@@ -70,62 +70,95 @@ const List = ({url}) => {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchItems();
-    },[])
+    }, [])
 
-  return (  
-    <div className="list add flex-col">
-        <p>All Foods List</p>
-        <div className="list-table-header">
-            <b>Image</b>
-            <b>Name</b>
-            <b>Category</b>
-            <b>Price</b>
-            <b>Stock</b>
-            <b>Action</b>
-        </div>
-        {list.map((item,index)=>{
-           return(
-            <div key={index} className="list-table-row">
-                <img src={item.image.startsWith("http") ? item.image : `${url}/images/`+item.image} alt=""/>
-                <p>{item.name}</p>
-                <p>{item.category}</p>
-                
-                {editId === item._id ? (
-                    <div className="edit-price-container">
-                        <input 
-                            type="number" 
-                            value={tempPrice} 
-                            onChange={(e) => setTempPrice(e.target.value)}
-                            className="edit-price-input"
-                            autoFocus
-                        />
-                        <button className="action-btn save" onClick={() => savePrice(item._id)} title="Save">
-                            <Check size={16} />
-                        </button>
-                        <button className="action-btn cancel" onClick={cancelEditing} title="Cancel">
-                            <X size={16} />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="price-display" onClick={() => startEditing(item)} title="Click to edit">
-                        <p>{item.price.toLocaleString()} ₫</p>
-                        <Edit2 size={15} className="edit-icon" />
-                    </div>
-                )}
-
-                <div className={`stock-toggle ${item.available ? 'available' : 'unavailable'}`} onClick={() => toggleAvailability(item._id)}>
-                    {item.available ? 'In Stock' : 'Sold Out'}
-                </div>
-                <p onClick={()=>removeFood(item._id)} className='cursor'>
-                    <Trash2 size={20} />
-                </p>
+    return (
+        <div className="list-page">
+            <div className="list-header">
+                <h2>Food Items</h2>
+                <span className="item-count">{list.length} items</span>
             </div>
-           )
-        })}
-    </div>
-  )
-}  
+
+            <div className="list-grid">
+                {list.map((item, index) => (
+                    <div key={index} className="item-card">
+                        {/* Item Image */}
+                        <div className="item-image-container">
+                            <img
+                                src={item.image.startsWith("http") ? item.image : `${url}/images/` + item.image}
+                                alt={item.name}
+                                className="item-image"
+                            />
+                            <span
+                                className={`stock-badge ${item.available ? 'in-stock' : 'sold-out'}`}
+                                onClick={() => toggleAvailability(item._id)}
+                            >
+                                {item.available ? 'In Stock' : 'Sold Out'}
+                            </span>
+                        </div>
+
+                        {/* Item Info */}
+                        <div className="item-info">
+                            <h3 className="item-name">{item.name}</h3>
+                            <div className="item-category">
+                                <Tag size={12} />
+                                <span>{item.category}</span>
+                            </div>
+                        </div>
+
+                        {/* Price Section */}
+                        <div className="item-price-section">
+                            {editId === item._id ? (
+                                <div className="edit-price-container">
+                                    <input
+                                        type="number"
+                                        value={tempPrice}
+                                        onChange={(e) => setTempPrice(e.target.value)}
+                                        className="edit-price-input"
+                                        autoFocus
+                                    />
+                                    <button className="action-btn save" onClick={() => savePrice(item._id)} title="Save">
+                                        <Check size={16} />
+                                    </button>
+                                    <button className="action-btn cancel" onClick={cancelEditing} title="Cancel">
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="price-display" onClick={() => startEditing(item)}>
+                                    <span className="price-value">{item.price.toLocaleString()} ₫</span>
+                                    <Edit2 size={14} className="edit-icon" />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="item-actions">
+                            <button
+                                className={`toggle-btn ${item.available ? 'available' : 'unavailable'}`}
+                                onClick={() => toggleAvailability(item._id)}
+                            >
+                                {item.available ? 'Mark Sold Out' : 'Mark In Stock'}
+                            </button>
+                            <button className="delete-btn" onClick={() => removeFood(item._id)}>
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {list.length === 0 && (
+                <div className="empty-state">
+                    <Package size={48} />
+                    <h3>No items yet</h3>
+                    <p>Add your first food item to get started</p>
+                </div>
+            )}
+        </div>
+    )
+}
 
 export default List;
