@@ -224,3 +224,51 @@
 .food-item {
   animation: fadeIn 0.5s ease-out;
 }
+
+/* Sold Out Styles */
+.food-item.sold-out {
+  opacity: 0.8;
+}
+
+.food-item.sold-out:hover {
+  transform: translateY(-4px);
+}
+
+.food-item.sold-out .food-item-image {
+  filter: grayscale(50%);
+}
+
+.sold-out-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.sold-out-overlay span {
+  background: #ef4444;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.food-item-add-btn.sold-out-btn {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.food-item-add-btn.sold-out-btn:hover {
+  transform: none;
+  box-shadow: none;
+}

@@ -55,9 +55,14 @@ const List = ({ url }) => {
     }
 
     const savePrice = async (id) => {
+        const price = Number(tempPrice);
+        if (price < 1000 || price > 10000000) {
+            toast.error("Price must be between 1,000 ₫ and 10,000,000 ₫");
+            return;
+        }
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.post(`${url}/api/food/update`, { id, price: Number(tempPrice) }, { headers: { token } });
+            const response = await axios.post(`${url}/api/food/update`, { id, price }, { headers: { token } });
             if (response.data.success) {
                 toast.success(response.data.message);
                 setEditId(null);
@@ -117,6 +122,8 @@ const List = ({ url }) => {
                                         value={tempPrice}
                                         onChange={(e) => setTempPrice(e.target.value)}
                                         className="edit-price-input"
+                                        min="1000"
+                                        max="10000000"
                                         autoFocus
                                     />
                                     <button className="action-btn save" onClick={() => savePrice(item._id)} title="Save">

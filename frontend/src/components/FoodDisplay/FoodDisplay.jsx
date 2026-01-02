@@ -15,7 +15,7 @@ const FoodDisplay = ({ category }) => {
           if (category === "All" || category === item.category) {
             if (searchTerm === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())) {
               if (item.price >= minPrice && item.price <= maxPrice && (Number(item.averageRating) >= minRating || (minRating === 0))) {
-                return <FoodItem key={index} id={item._id} name={item.name} description={item.description} price={item.price} image={item.image} rating={item.averageRating} reviews={item.reviewCount} delay={index * 50} />
+                return <FoodItem key={index} id={item._id} name={item.name} description={item.description} price={item.price} image={item.image} rating={item.averageRating} reviews={item.reviewCount} available={item.available} delay={index * 50} />
               }
             }
           }
