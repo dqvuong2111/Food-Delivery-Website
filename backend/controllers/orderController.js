@@ -7,6 +7,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // placing user order for frontend
 const placeOrder = async (req, res) => {
   try {
+    // Stripe requires minimum ~50 cents (approximately 13,000 VND)
+    const MIN_ORDER_AMOUNT = 13000;
+    const totalAmount = req.body.amount + (req.body.deliveryFee || 0);
+
+    if (totalAmount < MIN_ORDER_AMOUNT) {
+      return res.json({
+        success: false,
+        message: `Minimum order amount is ${MIN_ORDER_AMOUNT.toLocaleString()} ₫. Please add more items to your cart.`
+      });
+    }
+
     const newOrder = new orderModel({
       userId: req.body.userId,
       items: req.body.items,
@@ -24,20 +35,24 @@ const placeOrder = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: item.price * 25000,
+        unit_amount: item.price, // Already in VND
       },
       quantity: item.quantity,
     }));
-    line_items.push({
-      price_data: {
-        currency: "vnd",
-        product_data: {
-          name: "Delivery Charges",
+
+    // Add delivery fee if present
+    if (req.body.deliveryFee && req.body.deliveryFee > 0) {
+      line_items.push({
+        price_data: {
+          currency: "vnd",
+          product_data: {
+            name: "Delivery Fee",
+          },
+          unit_amount: req.body.deliveryFee, // Already in VND
         },
-        unit_amount: req.body.deliveryFee, // Use actual fee from frontend
-      },
-      quantity: 1,
-    });
+        quantity: 1,
+      });
+    }
 
     // Construct return URLs
     // Priority: 1. Explicit params from frontend, 2. Origin header, 3. Env var, 4. Localhost default
@@ -46,12 +61,12 @@ const placeOrder = async (req, res) => {
 
     if (req.body.success_url && req.body.cancel_url) {
       successUrl = `${req.body.success_url}${orderId}`;
-      cancelUrl = `${req.body.cancel_url}${orderId}`;
+      cancelUrl = req.body.cancel_url; // Back to checkout, no orderId needed
     } else {
-      // Fallback: Use the origin of the request (most robust for local dev with varying ports)
+      // Fallback: Use the origin of the request
       const origin = req.headers.origin || req.body.origin || process.env.FRONTEND_URL || "http://localhost:5175";
       successUrl = `${origin}/verify?success=true&orderId=${orderId}`;
-      cancelUrl = `${origin}/verify?success=false&orderId=${orderId}`;
+      cancelUrl = `${origin}/order`; // Redirect back to checkout page
     }
 
     console.log(`[Stripe Redirect] Success: ${successUrl}, Cancel: ${cancelUrl}`);
@@ -99,10 +114,10 @@ const userOrders = async (req, res) => {
   }
 }
 
-//Listing orders for admin panel
+//Listing orders for admin panel (only show paid orders)
 const listOrder = async (req, res) => {
   try {
-    const orders = await orderModel.find({}).sort({ date: -1 });
+    const orders = await orderModel.find({ payment: true }).sort({ date: -1 });
     res.json({ success: true, data: orders })
 
   } catch (error) {

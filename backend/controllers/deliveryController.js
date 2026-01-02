@@ -5,7 +5,7 @@ import orderModel from '../models/orderModel.js';
 // Helper: Chuẩn hóa số điện thoại sang E.164 (VN)
 const formatPhone = (phone) => {
     if (!phone) return "+84900000000"; // Fallback nếu không có số (tránh lỗi crash)
-    
+
     // Xóa tất cả ký tự không phải số (trừ dấu +)
     let cleanPhone = phone.replace(/[^\d+]/g, '');
 
@@ -13,7 +13,7 @@ const formatPhone = (phone) => {
     if (cleanPhone.startsWith('0')) {
         cleanPhone = '+84' + cleanPhone.substring(1);
     }
-    
+
     // Nếu chưa có dấu +, thêm vào (giả định là +84 nếu thiếu)
     if (!cleanPhone.startsWith('+')) {
         cleanPhone = '+84' + cleanPhone;
@@ -24,7 +24,7 @@ const formatPhone = (phone) => {
 
 // Get Shipping Cost
 const getEstimate = async (req, res) => {
-    const { pickup, dropoff } = req.body; 
+    const { pickup, dropoff } = req.body;
     console.log(`[Lalamove Estimate] Request: ${pickup} -> ${dropoff}`);
 
     try {
@@ -34,7 +34,7 @@ const getEstimate = async (req, res) => {
 
         const quote = await getDeliveryQuote(pickupLoc, dropoffLoc);
         console.log(`[Lalamove] Quote success:`, quote.data?.quotationId);
-        
+
         res.json({ success: true, data: quote, locations: { pickup: pickupLoc, dropoff: dropoffLoc } });
     } catch (error) {
         console.error("[Estimate Error]", error.message);
@@ -44,9 +44,9 @@ const getEstimate = async (req, res) => {
 
 // Create Delivery Request (After user pays)
 const createDelivery = async (req, res) => {
-    const { orderId, quotation } = req.body; 
+    const { orderId, quotation } = req.body;
     console.log(`[Lalamove Create] Order: ${orderId}, Quote ID: ${quotation?.quotationId}`);
-    
+
     try {
         const order = await orderModel.findById(orderId);
         if (!order) return res.json({ success: false, message: "Order not found" });
@@ -59,37 +59,37 @@ const createDelivery = async (req, res) => {
 
         const sender = {
             name: "My Restaurant",
-            phone: senderPhone 
+            phone: senderPhone
         };
 
         const recipient = {
             name: `${order.address.firstName} ${order.address.lastName}`,
-            phone: recipientPhone 
+            phone: recipientPhone
         };
 
         const deliveryData = await placeDeliveryOrder(quotation, sender, recipient);
-        
+
         console.log(`[Lalamove] Order Placed:`, deliveryData);
 
         // LƯU VÀO DATABASE
         // deliveryData.data.orderId là ID của đơn Lalamove
-        const lalamoveOrderId = deliveryData.data?.orderId || deliveryData.orderId; 
-        
+        const lalamoveOrderId = deliveryData.data?.orderId || deliveryData.orderId;
+
         order.deliveryId = lalamoveOrderId;
         order.deliveryStatus = "ASSIGNING_DRIVER";
         order.status = "Finding Driver";
         await order.save();
 
-        res.json({ 
-            success: true, 
-            message: "Delivery Assigned", 
+        res.json({
+            success: true,
+            message: "Delivery Assigned",
             data: deliveryData,
             lalamoveOrderId: lalamoveOrderId // Send explicitly
         });
 
     } catch (error) {
         console.error("[Create Delivery Error]", error.message);
-        if(error.response) {
+        if (error.response) {
             console.error(">>> LALAMOVE REASON:", JSON.stringify(error.response.data, null, 2));
         }
         const backendMsg = error.response?.data?.message || error.message;
@@ -98,10 +98,22 @@ const createDelivery = async (req, res) => {
 };
 
 const getDeliveryStatus = async (req, res) => {
-    const { deliveryId, orderId } = req.body; 
+    const { deliveryId, orderId } = req.body;
     try {
+        // First, get current order status from DB
+        const currentOrder = await orderModel.findById(orderId);
+
+        // If admin manually set to Delivered or Cancelled, don't override from Lalamove
+        if (currentOrder && (currentOrder.status === 'Delivered' || currentOrder.status === 'Cancelled')) {
+            return res.json({
+                success: true,
+                data: { status: currentOrder.status },
+                message: 'Status already finalized by admin'
+            });
+        }
+
         const lalamoveData = await trackOrder(deliveryId);
-        const lalamoveStatus = lalamoveData.status || lalamoveData.data?.status; // Check structure
+        const lalamoveStatus = lalamoveData.status || lalamoveData.data?.status;
 
         if (orderId && lalamoveStatus) {
             // Map Lalamove status to System status
@@ -112,7 +124,7 @@ const getDeliveryStatus = async (req, res) => {
             if (lalamoveStatus === "COMPLETED") myStatus = "Delivered";
             if (lalamoveStatus === "CANCELED" || lalamoveStatus === "EXPIRED") myStatus = "Cancelled";
 
-            await orderModel.findByIdAndUpdate(orderId, { 
+            await orderModel.findByIdAndUpdate(orderId, {
                 deliveryStatus: lalamoveStatus,
                 status: myStatus
             });

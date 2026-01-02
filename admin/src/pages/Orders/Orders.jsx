@@ -119,26 +119,26 @@ const Orders = ({ url }) => {
   };
 
   const simulateLalamove = async (orderId, lalamoveStatus) => {
-    // Gi giả lập Webhook/Polling logic
+    // Simulate Webhook/Polling logic
     // Map Lalamove status to System status
     let myStatus = "Food Processing";
+    let cancellationReason = "";
+
     if (lalamoveStatus === "ASSIGNING_DRIVER") myStatus = "Finding Driver";
     if (lalamoveStatus === "ON_GOING") myStatus = "Out for delivery";
     if (lalamoveStatus === "COMPLETED") myStatus = "Delivered";
-    if (lalamoveStatus === "CANCELED") myStatus = "Cancelled";
+    if (lalamoveStatus === "CANCELED") {
+      myStatus = "Cancelled";
+      cancellationReason = "Cancelled by Lalamove: Driver not available in your area";
+    }
 
     try {
       const token = localStorage.getItem("token");
-      // Cập nhật trực tiếp vào DB thông qua API updateStatus (hoặc tạo API riêng nếu cần)
-      // Ở đây ta dùng updateStatus hiện có để đổi trạng thái đơn hàng hệ thống
       await axios.post(url + "/api/order/status", {
         orderId,
-        status: myStatus
+        status: myStatus,
+        cancellationReason: cancellationReason || undefined
       }, { headers: { token } });
-
-      // Nếu muốn cập nhật cả field 'deliveryStatus' trong DB, ta cần API hỗ trợ.
-      // Hiện tại api/order/status chỉ update 'status'. 
-      // Tuy nhiên, để test UI phản hồi là đủ.
 
       toast.info(`🛠 Simulated: ${lalamoveStatus} -> ${myStatus}`);
       await fetchAllOrder();

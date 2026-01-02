@@ -12,7 +12,7 @@ import EmptyState from '../../components/EmptyState/EmptyState';
 
 const MyOrders = () => {
 
-    const { url, token, addToCart } = useContext(StoreContext);
+    const { url, token, addToCart, setCartItems } = useContext(StoreContext);
     const [data, setData] = useState([]);
     const [showRatePopup, setShowRatePopup] = useState(false);
     const [selectedOrderItems, setSelectedOrderItems] = useState([]);
@@ -57,14 +57,32 @@ const MyOrders = () => {
             navigate('/');
             window.scrollTo(0, 0);
         } else {
-            // Delivered: Add old items to cart
+            // Clear cart first (both local and server)
+            try {
+                // Clear cart on server
+                await axios.post(url + "/api/cart/clear", {}, { headers: { token } });
+            } catch (e) {
+                console.log("Cart clear failed, continuing...");
+            }
+
+            // Build cart from order items (use item._id which is the food ID)
+            const newCart = {};
             for (const item of order.items) {
+                // The item._id stored in order is the food's _id
+                const foodId = item._id;
+                newCart[foodId] = item.quantity;
+
+                // Also sync each item to server
                 for (let i = 0; i < item.quantity; i++) {
-                    await addToCart(item._id);
+                    await addToCart(foodId);
                 }
             }
-            toast.success("Items added to cart!");
-            navigate('/cart'); // Optional: redirect to cart for convenience
+
+            // Set local cart state directly for immediate UI update
+            setCartItems(newCart);
+
+            toast.success("Order items added to cart!");
+            navigate('/cart');
         }
     }
 

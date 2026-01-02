@@ -72,15 +72,42 @@ const PlaceOrder = () => {
   const [userPosition, setUserPosition] = useState({ lat: 21.0285, lng: 105.8542 }); // Default User Pos
   const [isMapInteracted, setIsMapInteracted] = useState(false);
 
-  const [data, setData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    city: "Hà Nội", // Fixed to Hanoi
-    country: "Vietnam",
-    phone: "",
+  // Load saved form data from localStorage (persists when returning from Stripe)
+  const getSavedFormData = () => {
+    const saved = localStorage.getItem('checkoutFormData');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const [data, setData] = useState(() => {
+    const saved = getSavedFormData();
+    return saved || {
+      firstName: "",
+      lastName: "",
+      email: "",
+      street: "",
+      city: "Hanoi",
+      country: "Vietnam",
+      phone: "",
+    };
   });
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('checkoutFormData', JSON.stringify(data));
+  }, [data]);
+
+  // Address autocomplete suggestions
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionTimeoutRef = React.useRef(null);
+  const skipNextSuggestionRef = React.useRef(false);
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
@@ -137,6 +164,72 @@ const PlaceOrder = () => {
     return () => clearTimeout(timer);
   }, [data.street, data.city]);
 
+  // Fetch address suggestions as user types
+  const fetchSuggestions = async (query) => {
+    // Skip if we just selected a suggestion
+    if (skipNextSuggestionRef.current) {
+      skipNextSuggestionRef.current = false;
+      return;
+    }
+
+    if (query.length < 3) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    // Clear any pending timeout
+    if (suggestionTimeoutRef.current) {
+      clearTimeout(suggestionTimeoutRef.current);
+    }
+
+    // Debounce the API call
+    suggestionTimeoutRef.current = setTimeout(async () => {
+      try {
+        const response = await axios.get(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Hanoi, Vietnam')}&limit=5&addressdetails=1`
+        );
+        if (!skipNextSuggestionRef.current) {
+          setSuggestions(response.data);
+          setShowSuggestions(true);
+        }
+      } catch (error) {
+        console.error("Suggestion error:", error);
+      }
+    }, 300);
+  };
+
+  // Handle suggestion selection
+  const selectSuggestion = (suggestion) => {
+    // Set skip flag to prevent new fetches
+    skipNextSuggestionRef.current = true;
+
+    // Clear any pending timeout
+    if (suggestionTimeoutRef.current) {
+      clearTimeout(suggestionTimeoutRef.current);
+      suggestionTimeoutRef.current = null;
+    }
+
+    // Hide suggestions immediately
+    setSuggestions([]);
+    setShowSuggestions(false);
+
+    // Update data
+    setData(prev => ({
+      ...prev,
+      street: suggestion.display_name.split(',').slice(0, 3).join(', ')
+    }));
+    setUserPosition({
+      lat: parseFloat(suggestion.lat),
+      lng: parseFloat(suggestion.lon)
+    });
+    setIsMapInteracted(true);
+
+    // Keep skip flag active for 500ms to prevent any lingering fetches
+    setTimeout(() => {
+      skipNextSuggestionRef.current = false;
+    }, 500);
+  };
 
   // Hàm tính phí giao hàng từ API (Giữ nguyên logic cũ)
   const fetchDeliveryFee = async () => {
@@ -246,24 +339,39 @@ const PlaceOrder = () => {
             <input required name="lastName" onChange={onChangeHandler} value={data.lastName} type="text" placeholder="Last Name" />
           </div>
           <input required name="email" onChange={onChangeHandler} value={data.email} type="email" placeholder="Email Address" />
-          <input required name="phone" onChange={onChangeHandler} value={data.phone} type="tel" placeholder="Số điện thoại (VD: 0912345678)" pattern="^(0|\+84)[0-9]{9,10}$" title="Số điện thoại Việt Nam hợp lệ (VD: 0912345678 hoặc +84912345678)" />
+          <input required name="phone" onChange={onChangeHandler} value={data.phone} type="tel" placeholder="Phone Number (e.g., 0912345678)" pattern="^(0|\+84)[0-9]{9,10}$" title="Valid Vietnam phone number (e.g., 0912345678 or +84912345678)" />
         </div>
 
         {/* Address Information Section */}
         <div className="form-section">
           <h3 className="section-title">Delivery Address</h3>
 
-          {/* Google Maps Search Box */}
+          {/* Address Search Box with Autocomplete */}
           <div className="search-box-container">
             <input
               id="search-input"
               type="text"
-              placeholder="Search your location (or click on map)"
+              placeholder="Type your address (e.g., 123 Nguyen Trai, Thanh Xuan)"
               className="address-search-input"
-              value={data.street} // Bind search box to street
-              onChange={(e) => setData({ ...data, street: e.target.value })}
+              value={data.street}
+              onChange={(e) => {
+                setData({ ...data, street: e.target.value });
+                fetchSuggestions(e.target.value);
+              }}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             />
             <i className="search-icon">📍</i>
+            {/* Suggestions Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {suggestions.map((s, idx) => (
+                  <li key={idx} onClick={() => selectSuggestion(s)}>
+                    📍 {s.display_name.split(',').slice(0, 4).join(', ')}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Map Container */}
@@ -277,7 +385,7 @@ const PlaceOrder = () => {
               {/* Store Marker */}
               <Marker position={STORE_POS} icon={storeIcon}>
                 <Popup>
-                  <b>Cửa hàng (Bách Khoa)</b><br />Số 1 Đại Cồ Việt
+                  <b>BKFood Store (HUST)</b><br />1 Dai Co Viet, Hanoi
                 </Popup>
               </Marker>
 
@@ -292,7 +400,7 @@ const PlaceOrder = () => {
                   },
                 }}
               >
-                <Popup>Vị trí nhận hàng</Popup>
+                <Popup>Your Delivery Location</Popup>
               </Marker>
 
               {/* Route Line (Simple straight line for visual connection) */}
@@ -305,12 +413,15 @@ const PlaceOrder = () => {
 
           {/* Manual Address Fields */}
           <div className="address-details">
-            <input required name="street" onChange={onChangeHandler} value={data.street} type="text" placeholder="Địa chỉ đường (VD: 123 Nguyễn Trãi, Thanh Xuân)" />
+            <input required name="street" onChange={(e) => {
+              onChangeHandler(e);
+              fetchSuggestions(e.target.value);
+            }} value={data.street} type="text" placeholder="Street Address (e.g., 123 Nguyen Trai, Thanh Xuan)" />
             <div className="multi-fields">
-              <input name="city" value={data.city} type="text" placeholder="Thành phố" readOnly className="readonly-field" />
-              <input name="country" value={data.country} type="text" placeholder="Quốc gia" readOnly className="readonly-field" />
+              <input name="city" value={data.city} type="text" placeholder="City" readOnly className="readonly-field" />
+              <input name="country" value={data.country} type="text" placeholder="Country" readOnly className="readonly-field" />
             </div>
-            <p className="delivery-note">📍 Chúng tôi chỉ giao hàng trong nội thành Hà Nội</p>
+            <p className="delivery-note">📍 We only deliver within Hanoi city</p>
           </div>
         </div>
 
