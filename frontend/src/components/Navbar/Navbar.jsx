@@ -4,7 +4,7 @@ import "./NavbarSearch.css";
 import { assets } from "../../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
-import { Search, ShoppingBasket, User, ShoppingBag, LogOut, Heart } from "lucide-react";
+import { Search, ShoppingCart, CircleUserRound, Package, LogOut, Heart } from "lucide-react";
 
 const Navbar = () => {
   const [menu, setMenu] = useState("home");
@@ -13,7 +13,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
 
-  const logout = ()=>{
+  const logout = () => {
     localStorage.removeItem("token");
     setToken("");
     navigate("/");
@@ -22,7 +22,7 @@ const Navbar = () => {
   const handleSearch = (e) => {
     if (e) e.preventDefault();
     if (searchTerm.trim()) {
-        scrollToSection("food-filter", "menu");
+      scrollToSection("food-filter", "menu");
     }
   };
 
@@ -38,7 +38,7 @@ const Navbar = () => {
       setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
-           element.scrollIntoView({ behavior: "smooth" });
+          element.scrollIntoView({ behavior: "smooth" });
         }
       }, 500);
     }
@@ -126,36 +126,33 @@ const Navbar = () => {
 
       <div className="navbar-right">
         <form onSubmit={handleSearch} className="navbar-search-container">
-            <input 
-              ref={searchInputRef}
-              type="text" 
-              placeholder="Search..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="navbar-search-input"
-            />
-           <Search size={26} color="#49557e" onClick={handleSearch} className="navbar-search-icon-btn" style={{cursor: 'pointer'}} />
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="navbar-search-input"
+          />
+          <Search size={26} color="#49557e" onClick={handleSearch} className="navbar-search-icon-btn" style={{ cursor: 'pointer' }} />
         </form>
 
         <div className="navbar-search-icon">
           <Link to="/cart">
-            <ShoppingBasket size={26} color="#49557e" />
+            <ShoppingCart size={22} strokeWidth={2.5} />
           </Link>
           <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
-        {!token?<button onClick={()=>setShowLogin(true)}>Sign in</button>
-        :<div className="navbar-profile">
-          <User size={26} color="#49557e" />
-          <ul className="nav-profile-dropdown">
-            <li onClick={()=>navigate('/profile')}> <User size={20} /><p>Profile</p></li>
-            <hr />
-            <li onClick={()=>navigate('/wishlist')}> <Heart size={20} /><p>Wishlist</p></li>
-            <hr />
-            <li onClick={()=>navigate('/myorders')}> <ShoppingBag size={20} /><p>Order</p></li>
-            <hr />
-            <li onClick={logout}> <LogOut size={20} /><p>Logout</p></li>
-          </ul>
-        </div>}
+        {!token ? <button onClick={() => setShowLogin(true)}>Sign in</button>
+          : <div className="navbar-profile">
+            <CircleUserRound size={22} strokeWidth={2.5} />
+            <ul className="nav-profile-dropdown">
+              <li onClick={() => navigate('/profile')}> <CircleUserRound size={18} /><p>Profile</p></li>
+              <li onClick={() => navigate('/wishlist')}> <Heart size={18} /><p>Wishlist</p></li>
+              <li onClick={() => navigate('/myorders')}> <Package size={18} /><p>My Orders</p></li>
+              <li onClick={logout}> <LogOut size={18} /><p>Logout</p></li>
+            </ul>
+          </div>}
 
       </div>
     </div>
