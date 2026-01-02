@@ -6,11 +6,13 @@
     "install-backend": "cd backend && npm install",
     "install-frontend": "cd frontend && npm install",
     "install-admin": "cd admin && npm install",
-    "install-all": "npm run install-backend && npm run install-frontend && npm run install-admin",
+    "install-driver": "cd mock-driver-api && npm install",
+    "install-all": "npm run install-backend && npm run install-frontend && npm run install-admin && npm run install-driver",
     "start-backend": "cd backend && npm run server",
     "start-frontend": "cd frontend && npm run dev",
     "start-admin": "cd admin && npm run dev",
-    "all": "concurrently \"npm run start-backend\" \"npm run start-frontend\" \"npm run start-admin\""
+    "start-driver": "cd mock-driver-api && npm run start",
+    "all": "concurrently \"npm run start-backend\" \"npm run start-frontend\" \"npm run start-admin\" \"npm run start-driver\""
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
