@@ -1,0 +1,78 @@
+services:
+  # MongoDB Database
+  # mongodb:
+  #   image: mongo:7
+  #   container_name: bkfood-mongodb
+  #   restart: unless-stopped
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   networks:
+  #     - bkfood-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bkfood-backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DRIVER_API_URL=http://driver-api:5001
+    networks:
+      - bkfood-network
+    volumes:
+      - backend_uploads:/app/uploads
+
+  # Frontend (Customer Website)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bkfood-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - bkfood-network
+
+  # Admin Panel
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: bkfood-admin
+    restart: unless-stopped
+    ports:
+      - "5174:80"
+    depends_on:
+      - backend
+    networks:
+      - bkfood-network
+
+  # Mock Driver API (Delivery Service)
+  driver-api:
+    build:
+      context: ./mock-driver-api
+      dockerfile: Dockerfile
+    container_name: bkfood-driver-api
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    networks:
+      - bkfood-network
+
+networks:
+  bkfood-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  backend_uploads:
