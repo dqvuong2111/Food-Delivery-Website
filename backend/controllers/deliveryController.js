@@ -2,10 +2,8 @@ import axios from 'axios';
 import { getCoordinates } from '../services/googleMapsService.js';
 import orderModel from '../models/orderModel.js';
 
-// Mock Driver API URL (configurable via env)
 const DRIVER_API_URL = process.env.DRIVER_API_URL || 'http://127.0.0.1:5001';
 
-// Helper: Format phone number to E.164 (VN)
 const formatPhone = (phone) => {
     if (!phone) return "+84900000000";
     let cleanPhone = phone.replace(/[^\d+]/g, '');

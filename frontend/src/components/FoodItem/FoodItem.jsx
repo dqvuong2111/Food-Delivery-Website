@@ -34,7 +34,7 @@ const FoodItem = ({ id, name, price, description, image, rating, reviews, availa
                 <div className="food-item-name-rating">
                     <p>{name}</p>
                     <div className="rating-container">
-                        <img src={assets.rating_starts} alt="" className="stars-hidden" /> {/* Keep for layout or replace */}
+                        <img src={assets.rating_starts} alt="" className="stars-hidden" />
                         <div className="dynamic-rating">
                             <span className="star">★</span>
                             <span>{rating > 0 ? rating : "New"}</span>

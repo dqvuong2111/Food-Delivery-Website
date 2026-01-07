@@ -10,7 +10,7 @@
     font-size: 26px;
     font-weight: 700;
     color: var(--text-primary);
-    text-align: center; /* Center the header */
+    text-align: center;
 }
 
 .banners form {
@@ -23,7 +23,7 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
-    align-items: center; /* Center items horizontally */
+    align-items: center;
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
@@ -32,7 +32,7 @@
 .add-img-upload {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center title and label */
+    align-items: center;
     width: 100%;
 }
 
@@ -58,7 +58,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 80px; /* Wider padding for banners */
+    padding: 40px 80px;
     border: 3px dashed #cbd5e1;
     border-radius: var(--radius-lg);
     background-color: #f8fafc;
@@ -94,7 +94,7 @@
 .image-preview {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Banner should fill the space */
+    object-fit: cover;
     background: #fff;
 }
 
@@ -198,7 +198,7 @@
     padding: 12px;
     display: flex;
     justify-content: center;
-    border-top: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
     transform: translateY(100%);
     transition: transform 0.3s ease;
 }
@@ -217,7 +217,7 @@
     height: 36px;
     border-radius: 50%;
     background-color: #fee2e2;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.2s;
 }
 
@@ -225,5 +225,5 @@
     background-color: #ef4444;
     color: white;
     transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

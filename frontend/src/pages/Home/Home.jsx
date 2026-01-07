@@ -10,19 +10,19 @@ import Feedback from '../../components/Feedback/Feedback'
 
 const Home = () => {
 
-  const [category, setCategory] = useState("All");
+	const [category, setCategory] = useState("All");
 
-  return (
-    <div>
-      <Header />
-      <StoreInfo />
-      <ExploreMenu category={category} setCategory={setCategory} />
-      <FoodFilter />
-      <FoodDisplay category={category} />
-      <Feedback />
-      <AppDownload />
-    </div>
-  )
+	return (
+		<div>
+			<Header />
+			<StoreInfo />
+			<ExploreMenu category={category} setCategory={setCategory} />
+			<FoodFilter />
+			<FoodDisplay category={category} />
+			<Feedback />
+			<AppDownload />
+		</div>
+	)
 }
 
 export default Home

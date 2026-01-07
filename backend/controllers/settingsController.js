@@ -1,6 +1,6 @@
 import settingsModel from "../models/settingsModel.js";
 
-// Get Settings (Create default if not exists)
+// Get Settings
 const getSettings = async (req, res) => {
     try {
         let settings = await settingsModel.findOne();
@@ -8,22 +8,21 @@ const getSettings = async (req, res) => {
             settings = new settingsModel();
             await settings.save();
         }
-        res.json({success: true, data: settings})
+        res.json({ success: true, data: settings })
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "Error fetching settings"})
+        res.json({ success: false, message: "Error fetching settings" })
     }
 }
 
 // Update Settings
 const updateSettings = async (req, res) => {
     try {
-        // We update the first found document, or create if empty (though get should handle creation)
         const settings = await settingsModel.findOneAndUpdate({}, req.body, { new: true, upsert: true });
-        res.json({success: true, message: "Settings Updated", data: settings})
+        res.json({ success: true, message: "Settings Updated", data: settings })
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "Error updating settings"})
+        res.json({ success: false, message: "Error updating settings" })
     }
 }
 

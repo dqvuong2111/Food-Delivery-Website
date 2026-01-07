@@ -1,11 +1,11 @@
 import orderModel from "../models/orderModel.js";
 
-// Handle Driver API Webhook Events (from Mock Driver API)
+// Handle Driver API Webhook Events
 const handleWebhook = async (req, res) => {
     try {
         const event = req.body;
 
-        // Log the event (for debugging)
+        // Log for debugging
         console.log("[Webhook] Received:", JSON.stringify(event, null, 2));
 
         const eventType = event.eventType;
@@ -41,7 +41,6 @@ const handleWebhook = async (req, res) => {
             console.log(`[Webhook] Order ${orderId} updated to ${myStatus}${cancellationReason ? ` (Reason: ${cancellationReason})` : ''}`);
         }
 
-        // Always return 200 OK to acknowledge receipt
         res.status(200).send("OK");
 
     } catch (error) {

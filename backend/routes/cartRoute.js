@@ -1,10 +1,10 @@
 import express from "express";
 import {
-  addToCart,
-  removeFromCart,
-  getCart,
-  deleteFromCart,
-  clearCart
+	addToCart,
+	removeFromCart,
+	getCart,
+	deleteFromCart,
+	clearCart
 } from "../controllers/cartController.js";
 import authMiddleware from "../middleware/auth.js";
 

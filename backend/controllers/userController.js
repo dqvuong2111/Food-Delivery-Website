@@ -134,9 +134,6 @@ const removeAdmin = async (req, res) => {
             return res.json({ success: false, message: "Admin not found" });
         }
 
-        // Optional: Prevent deleting self (would need req.body.userId from auth middleware)
-        // For now, we allow it, but frontend should handle visual feedback.
-
         await userModel.findByIdAndDelete(adminId);
         res.json({ success: true, message: "Admin removed successfully" });
     } catch (error) {

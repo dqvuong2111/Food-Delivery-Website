@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import './Feedback.css'
 import { StoreContext } from '../../context/StoreContext'
 import axios from 'axios'
-import { assets } from '../../assets/assets' // Ensure generic user icon is available or handle fallback
+import { assets } from '../../assets/assets'
 
 const Feedback = () => {
 
@@ -36,7 +36,7 @@ const Feedback = () => {
                             <div className="feedback-header">
                                 <img src={url + "/images/" + review.foodImage} alt={review.foodName} onError={(e) => { e.target.src = assets.logo }} />
                                 <div className="feedback-info">
-                                    <h4>Guest User</h4> {/* We don't have user names stored in review currently */}
+                                    <h4>Guest User</h4> {/* don't have user names stored in review currently */}
                                     <p>Ordered: {review.foodName}</p>
                                 </div>
                             </div>

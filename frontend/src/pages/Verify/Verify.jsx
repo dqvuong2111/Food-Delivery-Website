@@ -6,35 +6,35 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const Verify = () => {
-  const [searchParam, setSearchParams] = useSearchParams();
-  const success = searchParam.get("success");
-  const orderId = searchParam.get("orderId");
-  const { url } = useContext(StoreContext);
-  const navigate = useNavigate();
-  const verifyPayment = async () => {
-    const response = await axios.post(url + "/api/order/verify", {
-      success,
-      orderId,
-    });
-    if (response.data.success) {
-      // Clear saved checkout form data
-      localStorage.removeItem('checkoutFormData');
-      toast.success("Order Placed Successfully");
-      navigate("/myorders");
-    } else {
-      toast.error("Payment Cancelled / Failed");
-      navigate("/cart"); // Redirect to Cart so user can try again
-    }
-  };
-  useEffect(() => {
-    verifyPayment();
-  }, []);
+	const [searchParam, setSearchParams] = useSearchParams();
+	const success = searchParam.get("success");
+	const orderId = searchParam.get("orderId");
+	const { url } = useContext(StoreContext);
+	const navigate = useNavigate();
+	const verifyPayment = async () => {
+		const response = await axios.post(url + "/api/order/verify", {
+			success,
+			orderId,
+		});
+		if (response.data.success) {
+			// Clear saved checkout form data
+			localStorage.removeItem('checkoutFormData');
+			toast.success("Order Placed Successfully");
+			navigate("/myorders");
+		} else {
+			toast.error("Payment Cancelled / Failed");
+			navigate("/cart"); // Redirect to Cart so user can try again
+		}
+	};
+	useEffect(() => {
+		verifyPayment();
+	}, []);
 
-  return (
-    <div className="verify">
-      <div className="spinner"></div>
-    </div>
-  );
+	return (
+		<div className="verify">
+			<div className="spinner"></div>
+		</div>
+	);
 };
 
 export default Verify;

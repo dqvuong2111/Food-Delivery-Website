@@ -5,7 +5,6 @@ import adminAuth from "../middleware/adminAuth.js";
 
 const deliveryRouter = express.Router();
 
-// Public or User routes
 deliveryRouter.post("/estimate", authMiddleware, getEstimate); // User checking shipping cost
 deliveryRouter.post("/create", adminAuth, createDelivery);     // Admin assigns delivery after cooking
 deliveryRouter.post("/status", authMiddleware, getDeliveryStatus); // User tracking

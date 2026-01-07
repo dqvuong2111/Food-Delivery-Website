@@ -8,11 +8,11 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <StoreContextProvider>
-      <App />
-      <ToastContainer />
-    </StoreContextProvider>
-  </BrowserRouter>
+	<BrowserRouter>
+		<StoreContextProvider>
+			<App />
+			<ToastContainer />
+		</StoreContextProvider>
+	</BrowserRouter>
 
 )

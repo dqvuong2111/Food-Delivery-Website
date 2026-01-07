@@ -8,7 +8,7 @@ const checkStatus = async () => {
     const orders = await orderModel.find({});
     const statuses = new Set();
     orders.forEach(order => {
-        statuses.add(`'${order.status}'`); // Wrap in quotes to see whitespace
+        statuses.add(`'${order.status}'`);
     });
     console.log("Distinct Statuses:", Array.from(statuses));
     mongoose.disconnect();

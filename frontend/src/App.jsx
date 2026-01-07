@@ -24,43 +24,43 @@ import FloatingDecorations from './components/FloatingDecorations/FloatingDecora
 
 const App = () => {
 
-  const { showLogin, setShowLogin } = useContext(StoreContext);
+	const { showLogin, setShowLogin } = useContext(StoreContext);
 
-  useEffect(() => {
-    AOS.init({
-      duration: 600,
-      offset: 20,
-      easing: 'ease-in-out',
-      once: true,
-    });
-  }, []);
+	useEffect(() => {
+		AOS.init({
+			duration: 600,
+			offset: 20,
+			easing: 'ease-in-out',
+			once: true,
+		});
+	}, []);
 
-  return (
-    <>
-      <ScrollToTop />
-      {showLogin ? <LoginPopup /> : <></>}
-      <FloatingDecorations />
-      <div className='app'>
-        <Navbar />
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/cart' element={<Cart />} />
-          <Route path='/order' element={<PlaceOrder />} />
-          <Route path='/verify' element={<Verify />} />
-          <Route path='/myorders' element={<MyOrders />} />
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/wishlist' element={<Wishlist />} />
-          <Route path='/forgot-password' element={<ForgotPassword />} />
-          <Route path='/reset-password/:token' element={<ResetPassword />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/delivery' element={<Delivery />} />
-          <Route path='/privacy' element={<Privacy />} />
-        </Routes>
-      </div>
-      <Footer />
-      <ChatWidget />
-    </>
-  )
+	return (
+		<>
+			<ScrollToTop />
+			{showLogin ? <LoginPopup /> : <></>}
+			<FloatingDecorations />
+			<div className='app'>
+				<Navbar />
+				<Routes>
+					<Route path='/' element={<Home />} />
+					<Route path='/cart' element={<Cart />} />
+					<Route path='/order' element={<PlaceOrder />} />
+					<Route path='/verify' element={<Verify />} />
+					<Route path='/myorders' element={<MyOrders />} />
+					<Route path='/profile' element={<Profile />} />
+					<Route path='/wishlist' element={<Wishlist />} />
+					<Route path='/forgot-password' element={<ForgotPassword />} />
+					<Route path='/reset-password/:token' element={<ResetPassword />} />
+					<Route path='/about' element={<About />} />
+					<Route path='/delivery' element={<Delivery />} />
+					<Route path='/privacy' element={<Privacy />} />
+				</Routes>
+			</div>
+			<Footer />
+			<ChatWidget />
+		</>
+	)
 }
 
 export default App

@@ -6,10 +6,10 @@ import adminAuth from "../middleware/adminAuth.js";
 const categoryRoute = express.Router();
 
 const storage = multer.diskStorage({
-  destination: "uploads",
-  filename: (req, file, cb) => {
-    return cb(null, `${Date.now()}${file.originalname}`);
-  },
+	destination: "uploads",
+	filename: (req, file, cb) => {
+		return cb(null, `${Date.now()}${file.originalname}`);
+	},
 });
 
 const upload = multer({ storage: storage });

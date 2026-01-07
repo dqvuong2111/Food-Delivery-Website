@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-// Chúng ta chuyển sang dùng OpenStreetMap (Nominatim)
-// Không cần API Key, nhưng cần tuân thủ Usage Policy (User-Agent header)
 
 export const getCoordinates = async (address) => {
-    // URL của Nominatim API
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
 
     try {
@@ -24,7 +21,7 @@ export const getCoordinates = async (address) => {
                 address: result.display_name
             };
         } else {
-            console.warn(`⚠️ [OSM Warning] Address not found: "${address}". Using fallback.`);
+            console.warn(`[OSM Warning] Address not found: "${address}". Using fallback.`);
             return useFallback("Address not found on OSM");
         }
     } catch (error) {
@@ -33,7 +30,6 @@ export const getCoordinates = async (address) => {
     }
 };
 
-// Fallback giữ nguyên để test nếu mạng lỗi
 const useFallback = (reason) => {
     return {
         lat: "21.028511", // Hà Nội

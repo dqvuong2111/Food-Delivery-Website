@@ -1,24 +1,24 @@
 .food-display {
-  padding: 40px 0;
+	padding: 40px 0;
 }
 
 .food-display h2 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 32px;
-  text-align: center;
+	font-size: 32px;
+	font-weight: 700;
+	color: #1e293b;
+	margin-bottom: 32px;
+	text-align: center;
 }
 
 .food-display h2 span {
-  background: linear-gradient(135deg, #ff6b35, #f7931e);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+	background: linear-gradient(135deg, #ff6b35, #f7931e);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
 }
 
 .food-display-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 28px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 28px;
 }

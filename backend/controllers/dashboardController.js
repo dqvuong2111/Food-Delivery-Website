@@ -13,11 +13,7 @@ const getDashboardStats = async (req, res) => {
             return acc + (order.payment ? order.amount : 0);
         }, 0);
 
-        // Calculate sales over time (last 7 days logic - simplified for now to just return list)
-        // For a real chart, we'd group by date.
-        
         // Find top selling items
-        // This requires parsing 'items' array in orders. 
         let itemSales = {};
         orders.forEach(order => {
             order.items.forEach(item => {

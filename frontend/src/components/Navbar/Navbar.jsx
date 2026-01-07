@@ -7,156 +7,157 @@ import { StoreContext } from "../../context/StoreContext";
 import { Search, ShoppingCart, CircleUserRound, Package, LogOut, Heart } from "lucide-react";
 
 const Navbar = () => {
-  const [menu, setMenu] = useState("home");
-  const [scrolled, setScrolled] = useState(false);
-  const { getTotalCartAmount, token, setToken, searchTerm, setSearchTerm, setShowLogin } = useContext(StoreContext);
-  const navigate = useNavigate();
-  const searchInputRef = useRef(null);
+	const [menu, setMenu] = useState("home");
+	const [scrolled, setScrolled] = useState(false);
+	const { getTotalCartAmount, token, setToken, searchTerm, setSearchTerm, setShowLogin } = useContext(StoreContext);
+	const navigate = useNavigate();
+	const searchInputRef = useRef(null);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setToken("");
-    navigate("/");
-  }
+	const logout = () => {
+		localStorage.removeItem("token");
+		setToken("");
+		navigate("/");
+	}
 
-  const handleSearch = (e) => {
-    if (e) e.preventDefault();
-    if (searchTerm.trim()) {
-      scrollToSection("food-filter", "menu");
-    }
-  };
+	const handleSearch = (e) => {
+		if (e) e.preventDefault();
+		if (searchTerm.trim()) {
+			scrollToSection("food-filter", "menu");
+		}
+	};
 
-  const scrollToSection = (sectionId, menuName) => {
-    setMenu(menuName);
-    if (window.location.pathname === "/") {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    } else {
-      navigate("/");
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 500);
-    }
-  };
+	const scrollToSection = (sectionId, menuName) => {
+		setMenu(menuName);
+		if (window.location.pathname === "/") {
+			const element = document.getElementById(sectionId);
+			if (element) {
+				element.scrollIntoView({ behavior: "smooth" });
+			}
+		} else {
+			navigate("/");
+			setTimeout(() => {
+				const element = document.getElementById(sectionId);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth" });
+				}
+			}, 500);
+		}
+	};
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+	useEffect(() => {
+		const handleScroll = () => {
+			if (window.scrollY > 50) {
+				setScrolled(true);
+			} else {
+				setScrolled(false);
+			}
 
-      if (window.location.pathname !== "/") return;
+			if (window.location.pathname !== "/") return;
 
-      const sections = [
-        { id: "footer", name: "contact-us" },
-        { id: "app-download", name: "mobile-app" },
-        { id: "explore-menu", name: "menu" },
-      ];
+			const sections = [
+				{ id: "footer", name: "contact-us" },
+				{ id: "app-download", name: "mobile-app" },
+				{ id: "explore-menu", name: "menu" },
+			];
 
-      const scrollPosition = window.scrollY;
+			const scrollPosition = window.scrollY;
 
-      for (let i = 0; i < sections.length; i++) {
-        const section = document.getElementById(sections[i].id);
+			if (window.innerHeight + scrollPosition >= document.body.offsetHeight - 10) {
+				setMenu("contact-us");
+				return;
+			}
 
-        if (section && section.offsetTop <= scrollPosition + 150) {
-          setMenu(sections[i].name);
-          return;
-        }
-      }
+			for (let i = 0; i < sections.length; i++) {
+				const section = document.getElementById(sections[i].id);
 
-      if (scrollPosition < 200) {
-        setMenu("home");
-      }
-    };
+				if (section && section.offsetTop <= scrollPosition + 150) {
+					setMenu(sections[i].name);
+					return;
+				}
+			}
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+			if (scrollPosition < 200) {
+				setMenu("home");
+			}
+		};
 
-  return (
-    <div className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <Link to="/">
-        <img src={assets.logo} alt="" className="logo" />
-      </Link>
+		window.addEventListener("scroll", handleScroll);
+		handleScroll();
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
 
-      <ul className="navbar-menu">
-        <Link
-          to="/"
-          onClick={() => {
-            setMenu("home");
-            window.scrollTo(0, 0);
-          }}
-          className={menu === "home" ? "active" : ""}
-        >
-          Home
-        </Link>
+	return (
+		<div className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+			<Link to="/">
+				<img src={assets.logo} alt="" className="logo" />
+			</Link>
 
-        <a
-          href="#explore-menu"
-          onClick={(e) => { e.preventDefault(); scrollToSection("explore-menu", "menu"); }}
-          className={menu === "menu" ? "active" : ""}
-        >
-          Menu
-        </a>
+			<ul className="navbar-menu">
+				<Link
+					to="/"
+					onClick={() => {
+						setMenu("home");
+						window.scrollTo(0, 0);
+					}}
+					className={menu === "home" ? "active" : ""}>
+					Home
+				</Link>
 
-        <a
-          href="#app-download"
-          onClick={(e) => { e.preventDefault(); scrollToSection("app-download", "mobile-app"); }}
-          className={menu === "mobile-app" ? "active" : ""}
-        >
-          Mobile App
-        </a>
+				<a
+					href="#explore-menu"
+					onClick={(e) => { e.preventDefault(); scrollToSection("explore-menu", "menu"); }}
+					className={menu === "menu" ? "active" : ""}>
+					Menu
+				</a>
 
-        <a
-          href="#footer"
-          onClick={(e) => { e.preventDefault(); scrollToSection("footer", "contact-us"); }}
-          className={menu === "contact-us" ? "active" : ""}
-        >
-          Contact Us
-        </a>
-      </ul>
+				<a
+					href="#app-download"
+					onClick={(e) => { e.preventDefault(); scrollToSection("app-download", "mobile-app"); }}
+					className={menu === "mobile-app" ? "active" : ""}>
+					Mobile App
+				</a>
 
-      <div className="navbar-right">
-        <form onSubmit={handleSearch} className="navbar-search-container">
-          <input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="navbar-search-input"
-          />
-          <Search size={26} color="#49557e" onClick={handleSearch} className="navbar-search-icon-btn" style={{ cursor: 'pointer' }} />
-        </form>
+				<a
+					href="#footer"
+					onClick={(e) => { e.preventDefault(); scrollToSection("footer", "contact-us"); }}
+					className={menu === "contact-us" ? "active" : ""}>
+					Contact Us
+				</a>
+			</ul>
 
-        <div className="navbar-search-icon">
-          <Link to="/cart">
-            <ShoppingCart size={22} strokeWidth={2.5} />
-          </Link>
-          <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
-        </div>
-        {!token ? <button onClick={() => setShowLogin(true)}>Sign in</button>
-          : <div className="navbar-profile">
-            <CircleUserRound size={22} strokeWidth={2.5} />
-            <ul className="nav-profile-dropdown">
-              <li onClick={() => navigate('/profile')}> <CircleUserRound size={18} /><p>Profile</p></li>
-              <li onClick={() => navigate('/wishlist')}> <Heart size={18} /><p>Wishlist</p></li>
-              <li onClick={() => navigate('/myorders')}> <Package size={18} /><p>My Orders</p></li>
-              <li onClick={logout}> <LogOut size={18} /><p>Logout</p></li>
-            </ul>
-          </div>}
+			<div className="navbar-right">
+				<form onSubmit={handleSearch} className="navbar-search-container">
+					<input
+						ref={searchInputRef}
+						type="text"
+						placeholder="Search..."
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+						className="navbar-search-input"
+					/>
+					<Search size={26} color="#49557e" onClick={handleSearch} className="navbar-search-icon-btn" style={{ cursor: 'pointer' }} />
+				</form>
 
-      </div>
-    </div>
-  );
+				<div className="navbar-search-icon">
+					<Link to="/cart">
+						<ShoppingCart size={22} strokeWidth={2.5} />
+					</Link>
+					<div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
+				</div>
+				{!token ? <button onClick={() => setShowLogin(true)}>Sign in</button>
+					: <div className="navbar-profile">
+						<CircleUserRound size={22} strokeWidth={2.5} />
+						<ul className="nav-profile-dropdown">
+							<li onClick={() => navigate('/profile')}> <CircleUserRound size={18} /><p>Profile</p></li>
+							<li onClick={() => navigate('/wishlist')}> <Heart size={18} /><p>Wishlist</p></li>
+							<li onClick={() => navigate('/myorders')}> <Package size={18} /><p>My Orders</p></li>
+							<li onClick={logout}> <LogOut size={18} /><p>Logout</p></li>
+						</ul>
+					</div>}
+
+			</div>
+		</div>
+	);
 };
 
 export default Navbar;

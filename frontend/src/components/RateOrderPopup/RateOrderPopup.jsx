@@ -10,11 +10,11 @@ const RateOrderPopup = ({ setShowRatePopup, orderItems }) => {
     const [comments, setComments] = useState({}); // { itemId: comment }
 
     const handleRating = (itemId, rating) => {
-        setRatings(prev => ({...prev, [itemId]: rating}));
+        setRatings(prev => ({ ...prev, [itemId]: rating }));
     }
 
     const handleComment = (itemId, comment) => {
-        setComments(prev => ({...prev, [itemId]: comment}));
+        setComments(prev => ({ ...prev, [itemId]: comment }));
     }
 
     const submitReviews = async () => {
@@ -49,15 +49,15 @@ const RateOrderPopup = ({ setShowRatePopup, orderItems }) => {
                             <p className='item-name'>{item.name}</p>
                             <div className="star-rating">
                                 {[1, 2, 3, 4, 5].map((star) => (
-                                    <span 
-                                        key={star} 
+                                    <span
+                                        key={star}
                                         className={ratings[item._id] >= star ? "star filled" : "star"}
                                         onClick={() => handleRating(item._id, star)}
                                     >★</span>
                                 ))}
                             </div>
-                            <textarea 
-                                placeholder='Write a review...' 
+                            <textarea
+                                placeholder='Write a review...'
                                 onChange={(e) => handleComment(item._id, e.target.value)}
                             />
                         </div>

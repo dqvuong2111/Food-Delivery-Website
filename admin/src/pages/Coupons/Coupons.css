@@ -100,8 +100,8 @@
     padding: 20px 30px;
     border-bottom: 1px solid var(--border-default);
     background-color: var(--bg-surface);
-    font-size: 15px; /* Increased from 14px */
-    text-align: center; /* Center all text */
+    font-size: 15px;
+    text-align: center;
 }
 
 .coupon-table-format.title {
@@ -111,7 +111,7 @@
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
-    font-size: 16px; /* Increased from 12px */
+    font-size: 16px;
     letter-spacing: 1px;
 }
 
@@ -123,18 +123,18 @@
 .coupon-table-format p:first-child {
     font-family: 'Monaco', 'Consolas', monospace;
     font-weight: 700;
-    font-size: 15px; /* Increased from 14px */
+    font-size: 15px;
     color: var(--color-primary);
     background: #fff5f5;
     padding: 6px 12px;
     border-radius: 6px;
     width: fit-content;
     border: 1px solid #fed7d7;
-    margin: 0 auto; /* Center the code box */
+    margin: 0 auto;
 }
 
 .active-status {
-    margin: 0 auto; /* Center the status badge */
+    margin: 0 auto;
 }
 
 /* Delete Icon */
@@ -148,5 +148,5 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    margin: 0 auto; /* Center in grid cell */
+    margin: 0 auto;
 }

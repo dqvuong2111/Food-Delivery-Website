@@ -6,7 +6,7 @@ const addReview = async (req, res) => {
     try {
         const { foodId, rating, comment } = req.body;
         const review = new reviewModel({
-            userId: req.body.userId, // From auth middleware
+            userId: req.body.userId,
             foodId,
             rating,
             comment
@@ -43,7 +43,7 @@ const getAllReviews = async (req, res) => {
     try {
         const reviews = await reviewModel.find({})
             .sort({ date: -1 })
-            .limit(10); // Limit to latest 10
+            .limit(10);
 
         const reviewsWithDetails = await Promise.all(reviews.map(async (review) => {
             const food = await foodModel.findById(review.foodId);

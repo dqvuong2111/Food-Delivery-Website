@@ -1,106 +1,109 @@
 .footer {
-  color: #d9d9d9;
-  background-color: #1a1a1a; /* Darker, more premium gray */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 80px 8vw 40px;
-  margin-top: 100px;
-  scroll-margin-top: 100px; /* Offset for sticky navbar */
+	color: #d9d9d9;
+	background-color: #1a1a1a;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	padding: 80px 8vw 40px;
+	margin-top: 120px;
+	scroll-margin-top: 120px;
 }
 
 .footer-content {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 80px;
+	width: 100%;
+	display: grid;
+	grid-template-columns: 2fr 1fr 1fr;
+	gap: 80px;
 }
 
-.footer-content-left, .footer-content-right, .footer-content-center {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 24px;
+.footer-content-left,
+.footer-content-right,
+.footer-content-center {
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	gap: 24px;
 }
 
 .footer-content-left p {
-  line-height: 1.6;
-  font-size: 15px;
+	line-height: 1.6;
+	font-size: 15px;
 }
 
 .footer-logo {
-    width: 150px;
-    margin-bottom: -10px; /* Slight adjustment to spacing */
+	width: 150px;
+	margin-bottom: -10px;
 }
 
-.footer-content-center h2, .footer-content-right h2 {
-  color: white;
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 8px;
+.footer-content-center h2,
+.footer-content-right h2 {
+	color: white;
+	font-size: 20px;
+	font-weight: 600;
+	margin-bottom: 8px;
 }
 
 .footer-content ul {
-  padding: 0;
+	padding: 0;
 }
 
 .footer-content li {
-  list-style: none;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: color 0.3s;
+	list-style: none;
+	margin-bottom: 12px;
+	cursor: pointer;
+	transition: color 0.3s;
 }
 
 .footer-content li:hover {
-  color: white;
-  transform: translateX(4px); /* Subtle slide */
+	color: white;
+	transform: translateX(4px);
 }
 
 .footer-social-icon {
-  display: flex;
-  gap: 16px;
+	display: flex;
+	gap: 16px;
 }
 
 .footer-social-icon img {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  border-radius: 50%;
-  border: 1px solid #444;
-  padding: 8px; /* Assuming icons are simple svgs/pngs, padding makes them look like buttons */
-  transition: all 0.3s ease;
-  background-color: #2a2a2a;
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	border-radius: 50%;
+	border: 1px solid #444;
+	padding: 8px;
+	transition: all 0.3s ease;
+	background-color: #2a2a2a;
 }
 
 .footer-social-icon img:hover {
-  border-color: var(--color-primary);
-  background-color: var(--color-primary);
-  transform: translateY(-4px);
+	border-color: var(--color-primary);
+	background-color: var(--color-primary);
+	transform: translateY(-4px);
 }
 
 .footer hr {
-  width: 100%;
-  height: 1px;
-  margin: 40px 0 20px;
-  background-color: #444;
-  border: none;
+	width: 100%;
+	height: 1px;
+	margin: 40px 0 20px;
+	background-color: #444;
+	border: none;
 }
 
 .footer-copyright {
-  text-align: center;
-  font-size: 14px;
-  color: #888;
+	text-align: center;
+	font-size: 14px;
+	color: #888;
 }
 
 @media (max-width: 750px) {
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-  }
-  
-  .footer {
-    padding: 60px 5vw 30px;
-  }
+	.footer-content {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+	}
+
+	.footer {
+		padding: 60px 5vw 30px;
+	}
 }

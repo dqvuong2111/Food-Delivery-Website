@@ -48,7 +48,7 @@ app.use("/api/settings", settingsRouter)
 app.use("/api/chatbot", chatbotRouter)
 
 app.get("/", (req, res) => {
-    res.send("API Working hehehehe");
+    res.send("API Working");
 });
 
 app.listen(port, '0.0.0.0', () => {

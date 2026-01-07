@@ -33,7 +33,6 @@ const Cart = () => {
         <div className="cart">
             <div className="cart-header">
                 <h2>Shopping Cart</h2>
-                <p>{Object.values(cartItems).reduce((a, b) => a + b, 0)} Items</p>
             </div>
 
             {!hasItems ? (

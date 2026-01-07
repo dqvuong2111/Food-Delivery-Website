@@ -75,9 +75,9 @@ const registerDriver = async (req, res) => {
 const getDriverProfile = async (req, res) => {
     try {
         // req.body.driverId should be set by auth middleware
-        const driver = await driverModel.findById(req.body.userId); // Reusing userId from auth middleware if it decodes 'id'
+        const driver = await driverModel.findById(req.body.userId);
         if (!driver) {
-             return res.json({ success: false, message: "Driver not found" });
+            return res.json({ success: false, message: "Driver not found" });
         }
         res.json({ success: true, driverData: driver });
     } catch (error) {
@@ -89,7 +89,7 @@ const getDriverProfile = async (req, res) => {
 // Update Driver Status (Available/Offline)
 const updateDriverStatus = async (req, res) => {
     try {
-        const { userId, status } = req.body; 
+        const { userId, status } = req.body;
         await driverModel.findByIdAndUpdate(userId, { status });
         res.json({ success: true, message: "Status Updated" });
     } catch (error) {

@@ -5,15 +5,13 @@ import { assets } from '../../assets/assets';
 import Lottie from 'lottie-react';
 import robotAnimation from '../../assets/animations/robot.json';
 
-// Helper function to parse markdown bold (**text**) and line breaks
+//parse markdown bold and line breaks
 const formatMessage = (text) => {
     if (!text) return '';
 
-    // Split by newlines first
     const lines = text.split('\n');
 
     return lines.map((line, lineIndex) => {
-        // For each line, handle bold text (**text**)
         const parts = line.split(/(\*\*[^*]+\*\*)/g);
         const formattedParts = parts.map((part, partIndex) => {
             if (part.startsWith('**') && part.endsWith('**')) {
@@ -22,7 +20,6 @@ const formatMessage = (text) => {
             return part;
         });
 
-        // Return line with a <br /> at the end (except for last line)
         return (
             <React.Fragment key={lineIndex}>
                 {formattedParts}
@@ -56,7 +53,7 @@ const ChatWidget = () => {
         }
     }, [isOpen]);
 
-    // Initialize welcome message on mount
+    // welcome message
     useEffect(() => {
         if (messages.length === 0) {
             setMessages([{
@@ -81,7 +78,7 @@ const ChatWidget = () => {
         setIsLoading(true);
 
         try {
-            // Build history for context (exclude welcome message for API)
+            // Build history for context 
             const history = messages
                 .filter(m => m.role !== 'assistant' || messages.indexOf(m) !== 0)
                 .map(m => ({
@@ -231,7 +228,7 @@ const ChatWidget = () => {
                 </div>
             </div>
 
-            {/* Toggle Button - Only visible when chat is closed */}
+            {/* Toggle Button when chat is closed */}
             {!isOpen && (
                 <button
                     className="chat-toggle-btn"

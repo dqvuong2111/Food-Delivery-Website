@@ -99,7 +99,7 @@ const MyOrders = () => {
         }
     }, [token])
 
-    // Scroll to top only on mount, not on every token change (to prevent annoying jumps during polls if token re-evaluates)
+    // Scroll to top only on mount
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [])
@@ -110,7 +110,7 @@ const MyOrders = () => {
             "Pending": 1,
             "Confirmed": 2,
             "Food Processing": 3,
-            "Processing": 3, // Support legacy status
+            "Processing": 3,
             "Finding Driver": 4,
             "Out for delivery": 5,
             "Delivered": 6
